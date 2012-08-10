@@ -154,7 +154,13 @@ class Request
 				$this->_format = '';
 			}
 
+			// make sure there's no query string left
 			$this->_path = trim($this->_path, '/?');
+			
+			// make sure our path is relative to our base URL so that we can be put in sub directories
+			if($this->_path[0] !== '/')
+				$this->_path = '/' . $this->_path;
+			$this->_path = str_replace(parse_url(Settings::URL, PHP_URL_PATH), '', $this->_path);
 		}
 
 		// Rebuild the superglobals and the cages
