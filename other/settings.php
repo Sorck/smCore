@@ -1,6 +1,10 @@
 <?php
 /*
+ * The smCore settings class.
  * 
+ * Please copy this file to ../settings.php
+ * THEN modify it in that directory (this stops you 
+ * from pushing your settings to the public Git repo)
  */
 
 namespace smCore;
@@ -9,12 +13,12 @@ class Settings
 {
 
 	/**
-	 * These values should not include trailing slashes.
+	 * These values should not include trailing slashes. They should also be full paths rather than relative ones.
 	 *
-	 * PATH			Path where index.php is located
+	 * PATH		Path where index.php is located
 	 * MODULE_DIR	Path to the /modules/ directory
-	 * THEME_DIR	
-	 * CACHE_DIR	File cache directory, used for the Twig template cache and the File cache, in enabled
+	 * THEME_DIR	Path to the /themes/ directory
+	 * CACHE_DIR	File cache directory, used for the Twig template cache and the File cache, if enabled (see cache settings below)
 	 */
 	const PATH = '/home/my_site/public_html';
 	const MODULE_DIR = '/home/my_site/public_html/modules';
@@ -79,7 +83,7 @@ class Settings
 	 *     Blackhole:
 	 *         (none)
 	 *     File:
-	 *         directory       string  
+	 *         directory       string  Using Settings::CACHE_DIR will use the same as the Twig cache directory
 	 *     Memcached:
 	 *         servers         array   Array of servers, keys are "host", "port", "weight"
 	 *         persistent      boolean Utilize a persistent connection to the Memcached server
