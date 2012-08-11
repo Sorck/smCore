@@ -79,11 +79,36 @@ class Users
 		return $user;
 	}
 
+	public function getUserByEmail($email)
+	{
+		$db = Application::get('db');
+
+		$result = $db->query("
+			SELECT *
+			FROM {db_prefix}users
+			WHERE LOWER(user_email) = {string:email}",
+			array(
+				'email' => $email,
+			)
+		);
+
+		if ($result->rowCount() < 1)
+		{
+			return false;
+		}
+
+		$row = $result->fetch();
+		$user = new User($row);
+		$user->setData($row);
+
+		return $user;
+	}
+
 	public function getUserById($id)
 	{
 		// The User class will check if this is a good ID.
 		$user = new User(array(
-			'id_user' => $id
+			'id_user' => $id,
 		));
 
 		if ($id < 1)
@@ -94,7 +119,7 @@ class Users
 		$cache = Application::get('cache');
 
 		// If we've already fetched the data, there's no reason to grab it again
-		if (null === $data = $cache->load('user_data_' . $id))
+		if (false === $data = $cache->load('user_data_' . $id))
 		{
 			$db = Application::get('db');
 
@@ -117,7 +142,7 @@ class Users
 			$cache->save($data, 'user_data_' . $id);
 		}
 
-		$this->setData($data);
+		$user->setData($data);
 
 		return $user;
 	}
