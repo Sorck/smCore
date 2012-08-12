@@ -94,25 +94,28 @@ class File extends AbstractDriver
 	public function save($key, $data, $lifetime = null)
 	{
 		// if it's null then lets just remove the file
-		if ($data === null || $lifetime < 0)
+		if ($data === null || !$lifetime || $lifetime < 0)
 		{
 			$this->remove($key);
 			return;
 		}
-
+		
 		// set our time to live
-		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
+		$lifetime = ($lifetime ? 0 : $this->_options['default_ttl']) + time();
 		$filename = $this->_getFilename($key);
 
 		if ($fh = @fopen($filename, 'w'))
 		{
 			// Write the file.
 			set_file_buffer($fh, 0);
+			
+			$cache_data = '<' . '?' . 'php if (' . $lifetime . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}';
+			$cache_bytes = null;
 
 			// Only write if we can obtain a lock
 			if (flock($fh, LOCK_EX))
 			{
-				$cache_bytes = fwrite($fh, '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>');
+				$cache_bytes = fwrite($fh, $cache_data);
 			}
 
 			flock($fh, LOCK_UN);
@@ -169,6 +172,20 @@ class File extends AbstractDriver
 	{
 		// not sure on this either
 		return;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getStats()
+	{
+		return array(
+			'name' => 'File',
+			'items' => 0,
+			'hits' => 0,
+			'misses' => 0,
+			'servers' => array('N/A'),
+		);
 	}
 
 	/**
