@@ -167,6 +167,13 @@ class Response
 	 */
 	public function redirect($url, $permanent = false)
 	{
+		/* 
+		 * @todo suffix smCore url with trailing slash
+		 * When using redirect(Settings::URL) it will
+		 * redirect the non-trailing slash URL but then
+		 * to the same URL but with a trailing slash.
+		 * IMO it's a waste of redirects/HTTP requests.
+		 */
 		if (!preg_match('/^https?:\/\//', $url))
 		{
 			$url = Settings::URL . '/' . ltrim($url, '/');
