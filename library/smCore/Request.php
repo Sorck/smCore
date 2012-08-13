@@ -164,8 +164,7 @@ class Request
 			$urlpath = parse_url(Settings::URL, PHP_URL_PATH);
 			if(!empty($urlpath))
 			{
-				$pos = strpos($this->_path, $urlpath);
-				if($pos !== false)
+				if (!empty($urlpath) && 0 === $pos = strpos($this->_path, $urlpath))
 					$this->_path = substr_replace($this->_path, '', $pos, $pos + strlen($urlpath));
 			}
 		}
