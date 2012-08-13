@@ -94,23 +94,22 @@ class File extends AbstractDriver
 	public function save($key, $data, $lifetime = null)
 	{
 		// if it's null then lets just remove the file
-		if ($data === null || !$lifetime || $lifetime < 0)
+		if ($data === null || $lifetime < 0)
 		{
 			$this->remove($key);
 			return;
 		}
-		
+
 		// set our time to live
-		$lifetime = ($lifetime ? 0 : $this->_options['default_ttl']) + time();
+		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
 		$filename = $this->_getFilename($key);
 
 		if ($fh = @fopen($filename, 'w'))
 		{
 			// Write the file.
 			set_file_buffer($fh, 0);
-			
-			$cache_data = '<' . '?' . 'php if (' . $lifetime . ' < time()) $expired = true; else{$expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}';
-			$cache_bytes = null;
+			$cache_data = '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>';
+			$cache_bytes = 0;
 
 			// Only write if we can obtain a lock
 			if (flock($fh, LOCK_EX))

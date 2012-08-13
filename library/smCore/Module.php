@@ -24,6 +24,8 @@
 
 namespace smCore;
 
+use smCore\Security\Session;
+
 class Module
 {
 	protected $_application;
@@ -306,7 +308,9 @@ class Module
 		{
 			if (!$user->isLoggedIn())
 			{
-				Application::get('response')->redirect('/login/');
+				Session::start();
+				$_SESSION['redirect_url'] = Application::get('request')->getUrl();
+				Application::get('response')->redirect('login');
 			}
 
 			throw new Exception('exceptions.admin_required');
@@ -315,7 +319,7 @@ class Module
 		return $this;
 	}
 
-	public function isNotGuest($message = null, $exception_on_failure = true)
+	public function noGuests($message = null, $exception_on_failure = true)
 	{
 		$user = Application::get('user');
 
@@ -334,8 +338,6 @@ class Module
 
 	public function validateSession($type, $lifetime = 3600)
 	{
-		// Security\Session::start();
-
 		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
 		{
 			$input = Application::get('input');
@@ -356,14 +358,14 @@ class Module
 					}
 					else
 					{
-						$url = Settings::$url . '/admin/';
+						$url = 'admin';
 					}
 
 					Application::get('response')->redirect($url);
 				}
 			}
 
-			if (trim(Application::get('request')->getPath(), '/') !== 'admin/authenticate')
+			if (Application::get('request')->getPath() !== 'admin/authenticate')
 			{
 				$_SESSION['redirect_url'] = Application::get('request')->getPath();
 				Application::get('response')->redirect('/admin/authenticate/');

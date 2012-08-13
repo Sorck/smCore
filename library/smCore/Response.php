@@ -37,6 +37,7 @@ class Response
 	const HTTP_204 = 'HTTP/1.1 204 No Content';
 	const HTTP_301 = 'HTTP/1.1 301 Moved Permanently';
 	const HTTP_302 = 'HTTP/1.1 302 Found';
+	const HTTP_303 = 'HTTP/1.1 303 See Other';
 	const HTTP_307 = 'HTTP/1.1 307 Temporary Redirect';
 	const HTTP_403 = 'HTTP/1.1 403 Not Allowed';
 	const HTTP_404 = 'HTTP/1.1 404 Not Found';
@@ -165,22 +166,19 @@ class Response
 	 * @param string  $url       URL to redirect to
 	 * @param boolean $permanent Redirect permanently (301) or temporarily (307)
 	 */
-	public function redirect($url, $permanent = false)
+	public function redirect($url = null, $permanent = false)
 	{
-		/* 
-		 * @todo suffix smCore url with trailing slash
-		 * When using redirect(Settings::URL) it will
-		 * redirect the non-trailing slash URL but then
-		 * to the same URL but with a trailing slash.
-		 * IMO it's a waste of redirects/HTTP requests.
-		 */
-		if (!preg_match('/^https?:\/\//', $url))
+		if (null === $url)
+		{
+			$url = Settings::URL;
+		}
+		else if (!preg_match('/^https?:\/\//', $url))
 		{
 			$url = Settings::URL . '/' . ltrim($url, '/');
 		}
 
 		$this
-			->addHeader($permanent ? 301 : 307)
+			->addHeader(303)
 			->addHeader('Location: ' . $url)
 			->sendOutput()
 		;

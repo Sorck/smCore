@@ -64,17 +64,42 @@ class LogInOut extends Controller
 
 			if ($bcrypt->match($password, $user['password']))
 			{
-				// @todo
-				Session::setLifetime(3600);
+				if ($input->post->keyExists('login_forever'))
+				{
+					// Six years of seconds!
+					Session::setLifetime(189216000);
+				}
+				else
+				{
+					$minutes = $input->post->getInt('login_length');
+
+					// Minimum login time is 15 minutes
+					if ($minutes < 15)
+					{
+						$minutes = 60;
+					}
+
+					Session::setLifetime($minutes * 60);
+				}
 
 				Session::start();
 				$_SESSION['id_user'] = $user['id'];
 
 				// @todo: $module->fire('post_successful_login');
 
-				// @todo: redirect to the page they were on if they were redirected to the login page
-				Application::get('response')->redirect(Settings::URL);
+				if (!empty($_SESSION['redirect_url']))
+				{
+					$url = $_SESSION['redirect_url'];
+				}
+				else
+				{
+					$url = Settings::URL;
+				}
+
+				Application::get('response')->redirect($url);
 			}
+
+			setcookie(Settings::COOKIE_NAME, '', 0, Settings::COOKIE_PATH, Settings::COOKIE_DOMAIN);
 
 			return $module->render('login', array(
 				'failed' => true,

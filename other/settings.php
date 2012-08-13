@@ -1,10 +1,6 @@
 <?php
 /*
- * The smCore settings class.
  * 
- * Please copy this file to ../settings.php
- * THEN modify it in that directory (this stops you 
- * from pushing your settings to the public Git repo)
  */
 
 namespace smCore;
@@ -12,7 +8,7 @@ namespace smCore;
 class Settings
 {
 	/**
-	 * These values should not include trailing slashes. They should also be full paths rather than relative ones.
+	 * These values should not include trailing slashes.
 	 *
 	 * PATH       Path where index.php is located
 	 * MODULE_DIR Path to the /modules/ directory
@@ -35,6 +31,13 @@ class Settings
 	const COOKIE_PATH = '/';
 	const COOKIE_NAME = 'smcore_login';
 	const COOKIE_DOMAIN = '.mysite.com';
+
+	/**
+	 * Use database-driven sessions instead of file-based sessions?
+	 *
+	 * @todo: Change this to a string, to allow for memcached/etc. to be used for sessions?
+	 */
+	const SESSION_DB_DRIVEN = true;
 
 	/**
 	 * @todo: Default time zone should be a database setting and only used to display times, not store them
@@ -85,7 +88,7 @@ class Settings
 	 *     Blackhole:
 	 *         (none)
 	 *     File:
-	 *         directory       string  Using Settings::CACHE_DIR will use the same as the Twig cache directory
+	 *         directory       string  
 	 *     Memcached:
 	 *         servers         array   Array of servers, keys are "host", "port", "weight"
 	 *         persistent      boolean Utilize a persistent connection to the Memcached server
