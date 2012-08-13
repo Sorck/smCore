@@ -164,7 +164,7 @@ class Request
 			$urlpath = parse_url(Settings::URL, PHP_URL_PATH);
 			// we must have a valid urlpath and the urlpath must be the first thing to make this worth doing
 			if (!empty($urlpath) && 0 === strpos($this->_path, $urlpath))
-				$this->_path = substr($this->_path, strlen($urlpath));//substr_replace($this->_path, '', $pos, $pos + strlen($urlpath));
+				$this->_path = substr($this->_path, strlen($urlpath));
 		}
 
 		// Rebuild the superglobals and the cages
