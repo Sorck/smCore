@@ -63,6 +63,6 @@ abstract class AbstractCrypt
 		return substr($bytes, 0, $length);
 
 		// @todo
-		throw new Exception('getRandomBytes() fallback not yet implemented');		
+		throw new Exception('getRandomBytes() fallback not yet implemented');	
 	}
 }
