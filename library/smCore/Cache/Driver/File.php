@@ -101,7 +101,7 @@ class File extends AbstractDriver
 		}
 
 		// Set our time to live
-		$lifetime = time() + ($lifetime ? (int) $lifetime : $this->_options['default_ttl']);
+		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
 		// Calculate our filename
 		$filename = $this->_getFilename($key);
 
@@ -122,7 +122,6 @@ class File extends AbstractDriver
 
 			// Make sure to remove our lock so the file isn't eternally protected
 			flock($fh, LOCK_UN);
-			// Close our file handle
 			fclose($fh);
 
 			// Check that the cache write was successful; all the data should be written
