@@ -159,12 +159,18 @@ class Request
 			
 			// make sure our path is relative to our base URL so that we can be put in sub directories
 			if($this->_path[0] !== '/')
+			{
 				$this->_path = '/' . $this->_path;
+			}
+			
 			// make sure we only do the replacement a single time
 			$urlpath = parse_url(Settings::URL, PHP_URL_PATH);
+			
 			// we must have a valid urlpath and the urlpath must be the first thing to make this worth doing
 			if (!empty($urlpath) && 0 === strpos($this->_path, $urlpath))
+			{
 				$this->_path = substr($this->_path, strlen($urlpath));
+			}
 		}
 
 		// Rebuild the superglobals and the cages
