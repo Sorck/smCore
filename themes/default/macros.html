@@ -13,6 +13,17 @@
 
 {% macro pagination(url, pages, current_page) %}
 
-	{# todo #}
+	{#
+	 # a little painful to read if you have a lot of pages - need JS to shrink it 
+	 # be aware that the page no. passed by href starts at 0 yet it will display 1 to the user
+	 # as it's what people expect (i.e. only us programmers count from 0)
+	 #}
+	{% for i in 0..pages %}
+		{% if current_page == i %}
+	[{{i}}]
+		{% else %}
+	[<a href="{{url}}{{i}}">{{i+1}}</a>] 
+		{% endif %}
+	{% endfor %}
 
 {%- endmacro %}
