@@ -201,6 +201,6 @@ class File extends AbstractDriver
 	 */
 	protected function _getFilename($key)
 	{
-		return $this->_options['directory'] . '/.smcore_data_' . $this->_normalize($key) . '.php';
+		return $this->_options['directory'] . '/.smcore_data_' . md5($this->_normalize($key)) . '.php';
 	}
 }
