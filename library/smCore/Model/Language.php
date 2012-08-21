@@ -22,9 +22,9 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\FileIO\Factory as IOFactory;
+use smCore\FileIO\Factory as IOFactory;
 
-class Language
+class Language extends AbstractModel
 {
 	// Stores all the language strings
 	protected $_strings = array();
@@ -37,30 +37,34 @@ class Language
 	/**
 	 * Loads the basic language file and sets up stuff
 	 * 
-	 * @param type $name
-	 * @param type $code
-	 * @param type $id
+	 * @param \smCore\Container $container Dependency Injection Container
+	 * @param string            $name The language name, i.e. 'English (American)'
+	 * @param string            $code The language code, i.e. 'en_US'
+	 * @param int               $id
 	 */
-	public function __construct($name, $code, $id = 0)
+	public function __construct($container, $name, $code, $id = 0)
 	{
+		parent::__construct($container);
+
 		$this->_name = $name;
 		$this->_code = $code;
 		$this->_id = (int) $id;
 	}
 
 	/**
-	 * 
-	 * @return type
+	 * Search the cache for a package's strings, falling back to the database on failure
+	 *
+	 * @return array
 	 */
 	protected function _getPackageData()
 	{
 		if (null === $this->_packageData)
 		{
-			$cache = Application::get('cache');
+			$cache = $this->_container['cache'];
 
 			if (false === $this->_packageData = $cache->load('smcore_language_packages'))
 			{
-				$db = Application::get('db');
+				$db = $this->_container['db'];
 
 				$result = $db->query("
 					SELECT id_package, package_name, package_type
@@ -89,10 +93,12 @@ class Language
 	}
 
 	/**
-	 * 
-	 * @param type $type
-	 * @param type $force_recompile
-	 * @return \smCore\Model\Language
+	 * Load all packages of a given type, i.e. menu
+	 *
+	 * @param string  $type
+	 * @param boolean $force_recompile
+	 *
+	 * @return self
 	 */
 	public function loadPackagesByType($type, $force_recompile = false)
 	{
@@ -112,10 +118,12 @@ class Language
 	}
 
 	/**
-	 * 
-	 * @param type $name
-	 * @param type $force_recompile
-	 * @return \smCore\Model\Language
+	 * Load a package by name
+	 *
+	 * @param string $name
+	 * @param boolean $force_recompile
+	 *
+	 * @return self
 	 */
 	public function loadPackageByName($name, $force_recompile = false)
 	{
@@ -132,19 +140,20 @@ class Language
 	}
 
 	/**
-	 * 
-	 * @param type $id_package
-	 * @param type $force_recompile
+	 * Load a package by internal ID
+	 *
+	 * @param int $id_package
+	 * @param boolean $force_recompile
 	 */
 	protected function _loadPackageById($id_package, $force_recompile)
 	{
-		$cache = Application::get('cache');
+		$cache = $this->_container['cache'];
 
 		$cache_key = 'lang_package_' . (int) $id_package;
 
 		if ($force_recompile || false === $data = $cache->load($cache_key))
 		{
-			$db = Application::get('db');
+			$db = $this->_container['db'];
 
 			$result = $db->query("
 				SELECT string_key, string_value
@@ -173,7 +182,7 @@ class Language
 	/**
 	 * Merge the new strings onto the existing strings.
 	 *
-	 * @param array $strings An array of strings, with their keys flattened via _compileStrings()
+	 * @param array $strings An array of strings
 	 */
 	protected function _addStrings($strings)
 	{
@@ -224,32 +233,5 @@ class Language
 
  		// Return the key, so we at least know what's not there
 		return $key;
-	}
-
-	/**
-	 * Compile an array of language strings into a string-imploded array
-	 *
-	 * This helps with retrieval for humans, who would rather not type out arrays, and machines
-	 * which may or may not like to be speedier in their lookups.
-	 *
-	 * @param array $base     The base of the key for this level, to be imploded by $separator
-	 * @param array $strings  A key=>value array of strings to compile
-	 * @param array $compiled The array in which to store compiled values, passed by reference
-	 */
-	protected function _compileStrings($base, $strings, &$compiled)
-	{
-		foreach ($strings as $key => $val)
-		{
-			$current_key = array_merge($base, array($key));
-
-			if (is_array($val))
-			{
-				$this->_compileStrings($current_key, $val, $compiled);
-			}
-			else
-			{
-				$compiled[implode('.', $current_key)] = $val;
-			}
-		}
 	}
 }

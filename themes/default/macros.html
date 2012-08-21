@@ -6,48 +6,27 @@
 {% set submenu = smcMenu(menu_active) %}
 		<ul class="nav nav-tabs">
 {% for item in submenu[which]['submenu'] %}
+{% if item.submenu is not empty %}
+			<li class="dropdown{{ item.active ? ' active' : '' }}">
+				<a class="dropdown-toggle" data-toggle="dropdown" href="{{ item.url }}">
+					{{ item.title }}
+					<b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+{% for subitem in item.submenu %}
+					<li{{ subitem.active ? ' class="active"' : '' }}><a href="{{ subitem.url }}">{{ subitem.title }}</a></li>
+{% endfor %}
+				</ul>
+			</li>
+{% else %}
 			<li{{ item.active ? ' class="active"' : '' }}><a href="{{ item.url }}">{{ item.title }}</a></li>
+{% endif %}
 {% endfor %}
 		</ul>
 {%- endmacro %}
 
 {% macro pagination(url, pages, current_page) %}
 
-	{#
-	 # a little painful to read if you have a lot of pages - need JS to shrink it 
-	 # be aware that the page no. passed by href starts at 0 yet it will display 1 to the user
-	 # as it's what people expect (i.e. only us programmers count from 0)
-	 #}
-	<div class="pagination pagination-centered">
-		<ul>
-			{# make a list of allowed pages... #}
-			{% if (m+2) < pages %}
-				{% set pag_allowed = [0,pages] %}
-				{% for i in (current_page-1)..(current_page+1) if i not in pag_allowed %}
-					{% set pag_allowed = pag_allowed|merge([i]) %}
-				{% endfor %}
-			{% else %}
-				{% set pag_allowed = 0..pages %}
-			{% endif %}
-			{# this is used so we know whether to use ... or not #}
-			{% set k = true %}
-			{% for i in 0..pages %}
-				{% if i in pag_allowed %}
-					{% set k = false %}
-					{% if current_page == i %}
-				<li class="active"><a href="#">{{i+1}}</a></li>
-					{% else %}
-				<li><a href="{{url}}{{i}}">{{i+1}}</a></li> 
-					{% endif %}
-				{% else %}
-					{% if k %}
-					{% else %}
-					<li class="disabled"><a href="#">...</a></li>
-					{% set k = true %}
-					{% endif %}
-				{% endif %}
-			{% endfor %}
-		</ul>
-	</div>
+	{# todo #}
 
 {%- endmacro %}

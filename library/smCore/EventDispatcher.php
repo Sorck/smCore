@@ -26,23 +26,50 @@ class EventDispatcher
 {
 	protected $_listeners = array();
 
+	/**
+	 * Creates a new EventDispatcher.
+	 */
 	public function __construct()
 	{
 	}
 
-	public function setListeners($listeners)
+	/**
+	 * Sets the listeners this event dispatcher should know about.
+	 *
+	 * @param array   $listeners
+	 * @param boolean $overwrite
+	 */
+	public function addListeners(array $listeners, $overwrite = false)
 	{
+		if ($overwrite)
+		{
+			$this->_listeners = array();
+		}
+
 		foreach ($listeners as $listener)
 		{
 			$this->_listeners[$listener['listener_name']][] = $listener['callback'];
 		}
 	}
 
+	/**
+	 * Adds a listener to this dispatcher.
+	 *
+	 * @param string   $name
+	 * @param callable $callback
+	 */
 	public function addListener($name, $callback)
 	{
 		$this->_listeners[$name][] = $callback;
 	}
 
+	/**
+	 * Fires an event
+	 *
+	 * @param \smCore\Event $event
+	 *
+	 * @return 
+	 */
 	public function fire(Event $event)
 	{
 		$name = $event->getName();
@@ -59,6 +86,7 @@ class EventDispatcher
 			if (is_callable($listener))
 			{
 				$result = call_user_func($listener, $event);
+				$event->hasFired(true);
 
 				// An event sequence can be interrupted by returning a non-null value
 				if ($result !== null)
@@ -69,7 +97,7 @@ class EventDispatcher
 		}
 	}
 
-	public static function getListeners($name = null)
+	public function getListeners($name = null)
 	{
 		if (null === $name)
 		{

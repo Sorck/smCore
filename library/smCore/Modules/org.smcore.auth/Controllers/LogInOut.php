@@ -22,19 +22,18 @@
 
 namespace smCore\Modules\Auth\Controllers;
 
-use smCore\Application, smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Settings, smCore\Storage;
+use smCore\Module\Controller, smCore\Security\Crypt\Bcrypt, smCore\Security\Session, smCore\Storage;
 
 class LogInOut extends Controller
 {
 	public function preDispatch()
 	{
-		$this->_getParentModule()->loadLangPackage();
+		$this->module->loadLangPackage();
 	}
 
 	public function login()
 	{
-		$module = $this->_getParentModule();
-		$input = Application::get('input');
+		$input = $this->app['input'];
 
 		// I'd actually like to use the router to route to a different method depending on whether this was a GET or a POST
 		if ($input->post->keyExists('submit'))
@@ -53,7 +52,7 @@ class LogInOut extends Controller
 
 				if (false === $user)
 				{
-					return $module->render('login', array(
+					return $this->module->render('login', array(
 						'failed' => true,
 						'username' => $username,
 					));
@@ -67,7 +66,7 @@ class LogInOut extends Controller
 				if ($input->post->keyExists('login_forever'))
 				{
 					// Six years of seconds!
-					Session::setLifetime(189216000);
+					$this->app['session']->setLifetime(189216000);
 				}
 				else
 				{
@@ -79,10 +78,10 @@ class LogInOut extends Controller
 						$minutes = 60;
 					}
 
-					Session::setLifetime($minutes * 60);
+					$this->app['session']->setLifetime($minutes * 60);
 				}
 
-				Session::start();
+				$this->app['session']->start();
 				$_SESSION['id_user'] = $user['id'];
 
 				// @todo: $module->fire('post_successful_login');
@@ -93,29 +92,28 @@ class LogInOut extends Controller
 				}
 				else
 				{
-					$url = Settings::URL;
+					$url = null;
 				}
 
-				Application::get('response')->redirect($url);
+				$this->app['response']->redirect($url);
 			}
 
-			setcookie(Settings::COOKIE_NAME, '', 0, Settings::COOKIE_PATH, Settings::COOKIE_DOMAIN);
+			setcookie($this->app['settings']['cookie_name'], '', 0, $this->app['settings']['url'], $this->app['settings']['cookie_domain']);
 
-			return $module->render('login', array(
+			return $this->module->render('login', array(
 				'failed' => true,
 				'username' => $username,
 			));
 		}
 
-		return $module->render('login', array(
+		return $this->module->render('login', array(
 			'username' => '',
 		));
 	}
 
 	public function logout()
 	{
-		Session::end();
-
-		Application::get('response')->redirect(Settings::URL);
+		$this->app['session']->end();
+		$this->app['response']->redirect();
 	}
 }

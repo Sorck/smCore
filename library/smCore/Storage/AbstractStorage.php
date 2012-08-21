@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Subtemplate Form Control Class
+ * smCore Abstract Storage
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,10 +20,16 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control;
+namespace smCore\Storage;
 
-class Subtemplate extends Control
+use smCore\Container;
+
+abstract class AbstractStorage
 {
-	public $type = 'subtemplate';
+	protected $_container;
+
+	public function __construct(Container $container)
+	{
+		$this->_container = $container;
+	}
 }

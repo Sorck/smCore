@@ -24,27 +24,30 @@
 
 namespace smCore\Storage;
 
-use smCore\Application, smCore\Autoloader, smCore\Exception, smCore\Module, smCore\Settings, smCore\FileIO\Factory as IOFactory;
+use smCore\Autoloader, smCore\Exception, smCore\Module, smCore\FileIO\Factory as IOFactory;
 use ArrayIterator, DirectoryIterator, IteratorAggregate;
 
-class Modules implements IteratorAggregate
+class Modules extends AbstractStorage implements IteratorAggregate
 {
 	protected $_moduleData;
 	protected $_modules = array();
 
-	public function __construct()
+	public function __construct($container)
 	{
-		$cache = Application::get('cache');
+		parent::__construct($container);
+
+		$cache = $this->_container['cache'];
 		
 		// Load the configs
 		if (false === $this->_moduleData = $cache->load('core_module_registry_data'))
 		{
 			$this->_moduleData = array();
+			$settings = $this->_container['settings'];
 
 			// Load internal modules first, then any user-added modules
 			// @todo won't this try /path/to/smcore/library/smCore/Storage/Modules ?
 			$this->_readModulesFromDirectory(dirname(__DIR__) . '/Modules');
-			$this->_readModulesFromDirectory(Settings::MODULE_DIR);
+			$this->_readModulesFromDirectory($settings['module_dir']);
 
 			$cache->save('core_module_registry_data', $this->_moduleData);
 		}
@@ -60,7 +63,7 @@ class Modules implements IteratorAggregate
 				$moduleClass = 'smCore\\Module';
 			}
 
-			$this->_modules[$module['config']['identifier']] = new $moduleClass($module['config'], $module['directory']);
+			$this->_modules[$module['config']['identifier']] = new $moduleClass($this->_container, $module['config'], $module['directory']);
 		}
 	}
 

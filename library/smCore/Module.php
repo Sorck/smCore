@@ -28,7 +28,7 @@ use smCore\Security\Session;
 
 class Module
 {
-	protected $_application;
+	protected $app;
 
 	protected $_template_dir;
 
@@ -46,8 +46,10 @@ class Module
 	 * @param array  $config    The contents of this module's config.yaml file.
 	 * @param string $directory The directory where this module is located.
 	 */
-	public function __construct($config, $directory)
+	public function __construct(Application $app, $config, $directory)
 	{
+		$this->app = $app;
+
 		$this->_config = $config;
 		$this->_directory = $directory;
 
@@ -66,8 +68,8 @@ class Module
 
 		if (is_dir($this->_template_dir))
 		{
-			Application::get('twig')->getLoader()->addPath($this->_template_dir, $this->_config['namespaces']['template']);
-			Application::get('twig')->getLoader()->addPath($this->_template_dir, $this->_config['identifier']);
+			$app['twig']->getLoader()->addPath($this->_template_dir, $this->_config['namespaces']['template']);
+			$app['twig']->getLoader()->addPath($this->_template_dir, $this->_config['identifier']);
 		}
 	}
 
@@ -90,11 +92,11 @@ class Module
 		}
 
 		$controllerClass = $this->_config['namespaces']['php'] . '\\Controllers\\' . $controller;
-		$controllerObject = new $controllerClass($this);
+		$controllerObject = new $controllerClass($this->app, $this);
 
 		if (!is_callable(array($controllerObject, $method)))
 		{
-			throw new Exception(array('exceptions.modules.method_not_callable', $controller, $method));
+			throw new Exception(array('exceptions.modules.method_not_callable', $controllerClass, $method));
 		}
 
 		$controllerObject->preDispatch($method);
@@ -122,7 +124,7 @@ class Module
 
 		$modelClass = $this->_config['namespaces']['php'] . '\\Models\\' . $name;
 
-		return new $modelClass($this);
+		return new $modelClass($this->app, $this);
 	}
 
 	/**
@@ -142,7 +144,7 @@ class Module
 			}
 
 			$storageClass = $this->_config['namespaces']['php'] . '\\Storages\\' . $name;
-			$this->_storages[$name] = new $storageClass($this);
+			$this->_storages[$name] = new $storageClass($this->app, $this);
 		}
 
 		return $this->_storages[$name];
@@ -162,20 +164,20 @@ class Module
 	{
 		if ($sending_output)
 		{
-			Application::set('sending_output', true);
+			$this->app['sending_output'] = true;
 		}
 
-		return Application::get('twig')->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		return $this->app['twig']->render('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 	}
 
 	public function display($name, array $context = array(), $sending_output = true)
 	{
 		if ($sending_output)
 		{
-			Application::set('sending_output', true);
+			$this->app['sending_output'] = true;
 		}
 
-		Application::get('twig')->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
+		$this->app['twig']->display('@' . $this->_config['namespaces']['template'] . '/' . $name . '.html', $context);
 
 		return $this;
 	}
@@ -190,11 +192,11 @@ class Module
 	{
 		if (empty($package_name))
 		{
-			Application::get('lang')->loadPackageByName($this->_config['identifier']);
+			$this->app['lang']->loadPackageByName($this->_config['identifier']);
 		}
 		else
 		{
-			Application::get('lang')->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
+			$this->app['lang']->loadPackageByName($this->_config['identifier'] . '.' . $package_name);
 		}
 
 		return $this;
@@ -208,14 +210,9 @@ class Module
 	 *
 	 * @return string
 	 */
-	public function lang($key, array $replacements = array())
+	public function lang($key, array $replacements = array(), $namespace = true)
 	{
-		if (Application::get('lang')->keyExists($this->_config['namespaces']['lang'] . '.' . $key))
-		{
-			return Application::get('lang')->get($this->_config['namespaces']['lang'] . '.' . $key, $replacements);
-		}
-
-		return $key;
+		return $this->app['lang']->get(($namespace ? $this->_config['namespaces']['lang'] . '.' : '') . $key, $replacements);
 	}
 
 	/**
@@ -228,7 +225,7 @@ class Module
 	 */
 	public function throwLangException($key, array $replacements = array())
 	{
-		throw new Exception($this->lang($this->_config['namespaces']['lang'] . '.' . 'exceptions.' . $key, $replacements));
+		throw new Exception($this->lang('exceptions.' . $key, $replacements));
 	}
 
 	/**
@@ -265,7 +262,7 @@ class Module
 			$event = new Event($this, $this->_config['identifier'] . '.' . $event);
 		}
 
-		return Application::get('events')->fire($event);		
+		return $this->app['events']->fire($event);		
 	}
 
 	/**
@@ -277,7 +274,7 @@ class Module
 	 */
 	public function hasPermission($name)
 	{
-		return Application::get('user')->hasPermission($this->_config['identifier'] . '.' . $name);
+		return $this->app['user']->hasPermission($this->_config['identifier'] . '.' . $name);
 	}
 
 	/**
@@ -292,7 +289,7 @@ class Module
 			$name = $this->_config['identifier'] . '.' . $name;
 		}
 
-		if (!Application::get('user')->hasPermission($name))
+		if (!$this->app['user']->hasPermission($name))
 		{
 			throw new Exception('exceptions.no_permission');
 		}
@@ -302,15 +299,13 @@ class Module
 
 	public function requireAdmin()
 	{
-		$user = Application::get('user');
-
-		if (!$user->isAdmin())
+		if (!$this->app['user']->isAdmin())
 		{
-			if (!$user->isLoggedIn())
+			if (!$this->app['user']->isLoggedIn())
 			{
-				Session::start();
-				$_SESSION['redirect_url'] = Application::get('request')->getUrl();
-				Application::get('response')->redirect('login');
+				$this->app['session']->start();
+				$_SESSION['redirect_url'] = $this->app['request']->getUrl();
+				$this->app['response']->redirect('login');
 			}
 
 			throw new Exception('exceptions.admin_required');
@@ -321,9 +316,7 @@ class Module
 
 	public function noGuests($message = null, $exception_on_failure = true)
 	{
-		$user = Application::get('user');
-
-		if ($user->hasRole(0))
+		if ($this->app['user']->hasRole(0))
 		{
 			if ($exception_on_failure)
 			{
@@ -340,15 +333,13 @@ class Module
 	{
 		if (!isset($_SESSION['session_' . $type]) || $_SESSION['session_' . $type] + $lifetime < time())
 		{
-			$input = Application::get('input');
+			$input = $this->app['input'];
 
 			if ($input->post->keyExists('authenticate_pass'))
 			{
-				$user = Application::get('user');
-
 				$bcrypt = new Security\Crypt\Bcrypt();
 
-				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $user['password']))
+				if ($bcrypt->match($input->post->getRaw('authenticate_pass'), $this->app['user']['password']))
 				{
 					$_SESSION['session_' . $type] = time();
 
@@ -361,18 +352,23 @@ class Module
 						$url = 'admin';
 					}
 
-					Application::get('response')->redirect($url);
+					$this->app['response']->redirect($url);
 				}
 			}
 
-			if (Application::get('request')->getPath() !== 'admin/authenticate')
+			if ('admin/authenticate' !== $path = $this->app['request']->getPath())
 			{
-				$_SESSION['redirect_url'] = Application::get('request')->getPath();
-				Application::get('response')->redirect('/admin/authenticate/');
+				$_SESSION['redirect_url'] = $path;
+				$this->app['response']->redirect('/admin/authenticate/');
 			}
 		}
 
 		return $this;
+	}
+
+	public function endSession($type)
+	{
+		unset($_SESSION['session_' . $type]);
 	}
 
 	/**
@@ -397,6 +393,11 @@ class Module
 		return $this->_config['routes'];
 	}
 
+	public function getConfig()
+	{
+		return $this->_config;
+	}
+
 	/**
 	 *
 	 *
@@ -406,7 +407,7 @@ class Module
 	 */
 	public function cacheSave($key, $data, $lifetime = null)
 	{
-		Application::get('cache')->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
+		$this->app['cache']->save($this->_config['namespaces']['cache'] . '.' . $key, $data, $lifetime);
 	}
 
 	/**
@@ -416,7 +417,7 @@ class Module
 	 */
 	public function cacheLoad($key)
 	{
-		return Application::get('cache')->load($this->_config['namespaces']['cache'] . '.' . $key);
+		return $this->app['cache']->load($this->_config['namespaces']['cache'] . '.' . $key);
 	}
 
 	/**
@@ -426,29 +427,27 @@ class Module
 	 */
 	public function cacheTest($key)
 	{
-		return Application::get('cache')->test($this->_config['namespaces']['cache'] . '_' . $key);
+		return $this->app['cache']->test($this->_config['namespaces']['cache'] . '_' . $key);
 	}
 
 	/**
 	 * Create a unique token to use for a (likely destructive) request.
 	 *
-	 * @param string $name
+	 * @param string $name The name of the token
 	 *
 	 * @return string
 	 */
 	public function createToken($name)
 	{
-		$user = Application::get('user');
-		return md5(hash('sha256', $name . '%' . $user['token'] . '%' . $this->_config['identifier']));
+		return md5(hash('sha256', $name . '%' . $this->app['user']['token'] . '%' . $this->_config['identifier']));
 	}
 
 	/**
 	 * Check a token sent with a (likely destructive) request.
 	 *
-	 * @param string $name
-	 * @param string $value
-	 *
-	 * @throws \smCore\Exception
+	 * @param string $name          The name of the token
+	 * @param string $value         The token value that was sent
+	 * @param string $langException A language key to use instead of the default if the token doesn't match
 	 */
 	public function checkToken($name, $value, $langException = null)
 	{

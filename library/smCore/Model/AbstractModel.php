@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Color Form Control Class
+ * smCore Abstract Model
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,10 +20,21 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control;
+namespace smCore\Model;
 
-class Color extends Control
+use smCore\Container;
+
+abstract class AbstractModel
 {
-	public $type = 'color';
+	protected $_container;
+
+	/**
+	 * Sets up the dependency container for models to use
+	 *
+	 * @param \smCore\Container $container
+	 */
+	public function __construct(Container $container)
+	{
+		$this->_container = $container;
+	}
 }

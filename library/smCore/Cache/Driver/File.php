@@ -100,18 +100,15 @@ class File extends AbstractDriver
 			return;
 		}
 
-		// Set our time to live
+		// set our time to live
 		$lifetime = time() + ($lifetime ?: $this->_options['default_ttl']);
-		// Calculate our filename
 		$filename = $this->_getFilename($key);
 
-		// Open the file handle
 		if ($fh = @fopen($filename, 'w'))
 		{
 			// Write the file.
 			set_file_buffer($fh, 0);
-			// Build the content of the cache file
-			$cache_data = '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}';
+			$cache_data = '<' . '?php if (time() > ' . $lifetime . ') { $expired = true; } else { $expired = false; $value = \'' . addcslashes(serialize($data), '\\\'') . '\';}' . '?' . '>';
 			$cache_bytes = 0;
 
 			// Only write if we can obtain a lock
@@ -120,7 +117,6 @@ class File extends AbstractDriver
 				$cache_bytes = fwrite($fh, $cache_data);
 			}
 
-			// Make sure to remove our lock so the file isn't eternally protected
 			flock($fh, LOCK_UN);
 			fclose($fh);
 
@@ -160,7 +156,6 @@ class File extends AbstractDriver
 	 */
 	public function flush()
 	{
-		// Get all files in the cache directory that follow the cache directory name convention.
 		$files = glob($this->_options['directory'] . '/.smcore_data_*.php');
 
 		foreach ($files as $file)
@@ -201,6 +196,6 @@ class File extends AbstractDriver
 	 */
 	protected function _getFilename($key)
 	{
-		return $this->_options['directory'] . '/.smcore_data_' . md5($this->_normalize($key)) . '.php';
+		return $this->_options['directory'] . '/.smcore_data_' . $this->_normalize($key) . '.php';
 	}
 }

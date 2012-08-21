@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Button Form Control Class
+ * smCore Common Module - Main Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,10 +20,24 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control;
+namespace smCore\Modules\Common\Controllers;
 
-class Button extends Control
+use smCore\Module\Controller, smCore\Storage;
+
+class Main extends Controller
 {
-	public $type = 'button';
+	public function preDispatch()
+	{
+		$this->module->loadLangPackage();
+	}
+
+	public function credits()
+	{
+		return $this->module->render('credits');
+	}
+
+	public function terms_and_privacy()
+	{
+		return $this->module->render('terms_and_privacy');
+	}
 }

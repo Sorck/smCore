@@ -22,25 +22,33 @@
 
 namespace smCore\Model;
 
-use smCore\Application, smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Settings, smCore\Storage;
+use smCore\Event, smCore\Exception, smCore\Security\Crypt\Bcrypt, smCore\Storage;
 use ArrayAccess;
 
-class User implements ArrayAccess
+class User extends AbstractModel implements ArrayAccess
 {
 	// Data for this user
 	protected $_data = array();
 
-	public function __construct(array $data = null)
+	/**
+	 * Create a new User object
+	 *
+	 * @param smCore\Container $container
+	 * @param array            $data
+	 */
+	public function __construct($container, array $data = null)
 	{
-		$roles = Storage\Factory::factory('Roles');
+		parent::__construct($container);
+
+		$roles = $this->_container['storage_factory']->factory('Roles');
 
 		// Set some defaults to begin with
 		$this->_data = array(
 			'id' => 0,
-			'ip' => Application::get('input')->server->getRaw('REMOTE_ADDR'),
+			'ip' => $this->_container['input']->server->getRaw('REMOTE_ADDR'),
 			'display_name' => 'Guest', // @todo lang string
-			'language' => Settings::DEFAULT_LANG,
-			'theme' => (int) Settings::DEFAULT_THEME,
+			'language' => $this->_container['settings']['default_lang'],
+			'theme' => (int) $this->_container['settings']['default_theme'],
 			'token' => '', // @todo
 			'email' => '',
 			'roles' => array(
@@ -68,17 +76,15 @@ class User implements ArrayAccess
 			$this->_data['id'] = (int) $data['id_user'];
 		}
 
+		$roles = $this->_container['storage_factory']->factory('Roles');
+
 		if (!empty($data['user_primary_role']))
 		{
-			$roles = Storage\Factory::factory('Roles');
-
 			$this->_data['roles']['primary'] = $roles->getRoleById($data['user_primary_role']);
 		}
 
 		if (!empty($data['user_additional_roles']))
 		{
-			$roles = Storage\Factory::factory('Roles');
-
 			// @todo should this be in a separate table? I think so.
 			$temp = explode(',', $data['user_additional_roles']);
 
@@ -122,7 +128,7 @@ class User implements ArrayAccess
 			'data' => $data,
 		));
 
-		Application::get('events')->fire($event);
+		$this->_container['events']->fire($event);
 
 		return $this;
 	}
@@ -141,7 +147,7 @@ class User implements ArrayAccess
 	}
 
 	/**
-	 * 
+	 * Set a user's password
 	 *
 	 * @param string $password 
 	 *
@@ -163,7 +169,7 @@ class User implements ArrayAccess
 	 */
 	public function save()
 	{
-		return Storage\Factory::factory('Users')->save($this);
+		return $this->_container['storage_factory']->factory('Users')->save($this);
 	}
 
 	/**

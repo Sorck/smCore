@@ -26,6 +26,8 @@ use Inspekt_Cage;
 
 class Request
 {
+	protected $_container;
+
 	protected $_url;
 	protected $_method = 'GET';
 	protected $_is_xml_http_request = false;
@@ -34,12 +36,16 @@ class Request
 	protected $_has_get_params = false;
 	protected $_subdomain = 'www';
 
-	public function __construct()
+	public function __construct(Container $container)
 	{
-		$input = Application::get('input');
+		$this->_container = $container;
 
-		$this->_method = $input->server->getAlpha('REQUEST_METHOD');
-		$this->_is_xml_http_request = $input->server->getAlpha('X_REQUESTED_WITH') == 'XMLHttpRequest' || $input->get->keyExists('xmlHttpRequest') || $input->post->keyExists('xmlHttpRequest');
+		$this->_method = $this->_container['input']->server->getAlpha('REQUEST_METHOD');
+		$this->_is_xml_http_request =
+			$this->_container['input']->server->getAlpha('X_REQUESTED_WITH') == 'XMLHttpRequest'
+			|| $this->_container['input']->get->keyExists('xmlHttpRequest')
+			|| $this->_container['input']->post->keyExists('xmlHttpRequest')
+		;
 
 		// Get the app-relative path requested
 		$this->_parsePath();
@@ -154,22 +160,13 @@ class Request
 				$this->_format = '';
 			}
 
-			// make sure there's no query string left
-			$this->_path = trim($this->_path, '/?');
-			
-			// make sure our path is relative to our base URL so that we can be put in sub directories
-			if($this->_path[0] !== '/')
+			$this->_path = trim($this->_path, '/');
+
+			$base = trim(parse_url($this->_container['settings']['url'], PHP_URL_PATH), '/');
+
+			if (!empty($base) && 0 === strpos($this->_path, $base))
 			{
-				$this->_path = '/' . $this->_path;
-			}
-			
-			// make sure we only do the replacement a single time
-			$urlpath = parse_url(Settings::URL, PHP_URL_PATH);
-			
-			// we must have a valid urlpath and the urlpath must be the first thing to make this worth doing
-			if (!empty($urlpath) && 0 === strpos($this->_path, $urlpath))
-			{
-				$this->_path = substr($this->_path, strlen($urlpath));
+				$this->_path = trim(substr($this->_path, strlen($base)), '/');
 			}
 		}
 
@@ -177,7 +174,7 @@ class Request
 		$_REQUEST = $_POST + $_GET;
 
 		// Forget what $_GET actually says - overwrite it with our fake query string.
-		Application::get('input')->get = Inspekt_Cage::Factory($_GET, null, '_GET', false);
-		Application::get('input')->request = Inspekt_Cage::Factory($_REQUEST, null, '_GET', false);
+		$this->_container['input']->get = Inspekt_Cage::Factory($_GET, null, '_GET', false);
+		$this->_container['input']->request = Inspekt_Cage::Factory($_REQUEST, null, '_GET', false);
 	}
 }

@@ -22,9 +22,9 @@
 
 namespace smCore\Storage\Sessions;
 
-use smCore\Application, smCore\Security\Session, smCore\Settings;
+use smCore\Security\Session, smCore\Storage\AbstractStorage;
 
-class File
+class File extends AbstractStorage
 {
 	/**
 	 * Read a session from the database by ID.
@@ -40,7 +40,9 @@ class File
 			return false;
 		}
 
-		$file = Settings::CACHE_DIR . '/.smcore_session_' . $id;
+		$settings = $this->_container['settings'];
+
+		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
 
 		if (is_readable($file))
 		{
@@ -66,8 +68,9 @@ class File
 	 */
 	public function write($id, $data)
 	{
-		$file = Settings::CACHE_DIR . '/.smcore_session_' . $id;
-		$expires = time() + Session::getLifetime();
+		$settings = $this->_container['settings'];
+		$file = $settings['cache_dir'] . '/.smcore_session_' . $id;
+		$expires = time() + $this->_container['session']->getLifetime();
 
 		// Get the old expiration time so we don't accidentally extend it
 		if (is_readable($file))
@@ -103,7 +106,7 @@ class File
 			return false;
 		}
 
-		@unlink(Settings::CACHE_DIR . '/.smcore_session_' . $id);
+		@unlink($this->_container['settings']['cache_dir'] . '/.smcore_session_' . $id);
 
 		return true;
 	}
@@ -113,7 +116,7 @@ class File
 	 */
 	public function deleteExpired()
 	{
-		$sessions = glob(Settings::CACHE_DIR . '/.smcore_session_*');
+		$sessions = glob($this->_container['settings']['cache_dir'] . '/.smcore_session_*');
 
 		// @todo
 	}

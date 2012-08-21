@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Textarea Form Control Class
+ * smCore Authentication Module - Admin Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,19 +20,19 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Form\Control;
-use smCore\Application, smCore\Form\Control;
+namespace smCore\Modules\Auth\Controllers;
 
-class Textarea extends Control
+use smCore\Module\Controller, smCore\Storage;
+
+class Admin extends Controller
 {
-	public $type = 'textarea';
+	public function preDispatch()
+	{
+		$this->module->loadLangPackage();
+	}
 
-	protected $_defaults = array(
-		'rows' => 8,
-		'cols' => 40,
-		'value' => '',
-		'validation' => array(
-			'required' => false,
-		),
-	);
+	public function main()
+	{
+		return $this->module->render('admin/main');
+	}
 }

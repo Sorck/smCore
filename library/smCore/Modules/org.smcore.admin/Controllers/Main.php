@@ -22,38 +22,55 @@
 
 namespace smCore\Modules\Admin\Controllers;
 
-use smCore\Application, smCore\Module\Controller;
+use smCore\Module\Controller;
 
 class Main extends Controller
 {
 	public function preDispatch($method)
 	{
-		$this->_getParentModule()
+		$this->module
 			->requireAdmin()
 			->loadLangPackage();
 
 		if ($method !== 'authenticate')
 		{
-			$this->_getParentModule()->validateSession('admin');
+			$this->module->validateSession('admin');
 		}
 	}
 
 	public function main()
 	{
-		$module = $this->_getParentModule();
+		$app = $this->app;
 
-		return $module->render('main');
+		return $this->module->render('main', array(
+			'smcore_version' => '???', // @todo: fetch from smCore.org
+			'installed_smcore_version' => $app::VERSION,
+			'end_session_token' => $this->module->createToken('end_admin_session'),
+		));
 	}
 
 	public function authenticate()
 	{
-		$module = $this->_getParentModule();
-
-		if (Application::get('input')->post->keyExists('authenticate_pass'))
+		if ($this->app['input']->post->keyExists('authenticate_pass'))
 		{
-			$module->validateSession('admin');
+			$this->module->validateSession('admin');
 		}
 
-		return $module->render('admin_login');
+		return $this->module->render('admin_login');
+	}
+
+	public function endSession()
+	{
+		if (false !== $token = $this->app['input']->get->getAlnum('token'))
+		{
+			$this->module->checkToken('end_admin_session', $token);
+
+			$this->module->endSession('admin');
+
+			// Go back to the home page, since you're obviously not
+			$this->app['response']->redirect();
+		}
+
+		$this->module->throwLangException('end_session.missing_token');
 	}
 }
