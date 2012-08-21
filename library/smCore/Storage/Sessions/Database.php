@@ -91,7 +91,7 @@ class Database extends AbstractStorage
 		}
 		else
 		{
-			$expires = time() + Session::getLifetime();
+			$expires = time() + $this->_container['session']->getLifetime();
 		}
 
 		$db->query("
