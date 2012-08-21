@@ -52,6 +52,15 @@ abstract class AbstractCrypt
 			// @todo: it isn't long enough yet, urandom might not have given us the amount of bytes we need
 			return $output;
 		}
+		
+		// a quick attempt at providing random bytes...
+		$bytes = '';
+		while(strlen($bytes) < $length)
+		{
+			$bytes .= md5(microtime() . $length);
+		}
+		// now return the right number of bytes
+		return substr($bytes, 0, $length);
 
 		// @todo
 		throw new Exception('getRandomBytes() fallback not yet implemented');
