@@ -57,7 +57,7 @@ class Database extends AbstractStorage
 		{
 			return false;
 		}
-
+		
 		$row = $result->fetch();
 		return $row['session_data'];
 	}
