@@ -65,10 +65,10 @@ class Application extends Container
 
 		$this['session'] = new Security\Session($this);
 
-		$this['db'] = array($this, 'loadDatabase');
-		$this['cache'] = array($this, 'loadCache');
-		$this['mail'] = array($this, 'loadMail');
-		$this['twig'] = array($this, 'loadTheme');
+		$this->add('db', array($this, 'loadDatabase'));
+		$this->add('cache', array($this, 'loadCache'));
+		$this->add('mail', array($this, 'loadMail'));
+		$this->add('twig', array($this, 'loadTheme'));
 
 		$this['input'] = Inspekt::makeSuperCage(null, false);
 
@@ -90,7 +90,7 @@ class Application extends Container
 		// @todo don't just call this here
 		$theme = $this['theme'];
 
-		$this['events']->fire(new Event(null, 'org.smcore.core.pre_router'));
+		$this['events']->fire('org.smcore.core.pre_router');
 
 		$this['router'] = new Router;
 		$this['router']
@@ -128,7 +128,7 @@ class Application extends Container
 			$this['response']->setBody($module->runControllerMethod($route['controller'], $route['method']));
 		}
 
-		$this['events']->fire(new Event(null, 'org.smcore.core.post_router'));
+		$this['events']->fire('org.smcore.core.post_router');
 
 		$this['response']->sendOutput();
 	}

@@ -26,11 +26,11 @@ class Events extends AbstractStorage
 {
 	public function getActiveListeners()
 	{
-		$cache = $this->_container['cache'];
+		$cache = $this->_app['cache'];
 
 		if (false === $events = $cache->load('smcore_active_listeners'))
 		{
-			$db = $this->_container['db'];
+			$db = $this->_app['db'];
 			$events = array();
 
 			$result = $db->query("
@@ -39,9 +39,12 @@ class Events extends AbstractStorage
 				WHERE listener_enabled = 1"
 			);
 
-			if ($result->rowCount() > 0)
+			while ($row = $result->fetch())
 			{
-				$events = $result->fetchAll();
+				$events[] = array(
+					'name' => $row['listener_name'],
+					'callback' => $row['listener_callback'],
+				);
 			}
 
 			$cache->save('smcore_active_listeners', $events);
