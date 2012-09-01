@@ -35,8 +35,7 @@
 	 # Also, it's currently running on a hack to get the pages total to work.
 	 # Should the first page be 0 or 1 in the URL?
 	 #}
-
-	{% set pages = pages-1 %}
+	
 	{#
 	 # a little painful to read if you have a lot of pages - need JS to shrink it 
 	 # be aware that the page no. passed by href starts at 0 yet it will display 1 to the user
@@ -45,29 +44,37 @@
 	<div class="pagination pagination-centered">
 		<ul>
 			{# make a list of allowed pages... #}
-			{% if (m+2) < pages %}
-				{% set pag_allowed = [0,pages] %}
-				{% for i in (current_page-1)..(current_page+1) if i not in pag_allowed %}
-					{% set pag_allowed = pag_allowed|merge([i]) %}
+			{% if 2 < pages %}
+				{# if this is running then we have too many pages #}
+				{#{% set pages_allowed = [0,pages] %}#}
+				{% set pages_allowed = [] %}
+				{% for i in [(current_page-1), current_page, (current_page+1)]|merge([1,pages]) if i not in pages_allowed and i <= pages %}
+					{% set pages_allowed = pages_allowed|merge([i]) %}
 				{% endfor %}
 			{% else %}
-				{% set pag_allowed = 0..pages %}
+				{% set pages_allowed = 0..pages %}
 			{% endif %}
+			
 			{# this is used so we know whether to use ... or not #}
 			{% set k = true %}
-			{% for i in 0..pages %}
-				{% if i in pag_allowed %}
+			
+			{% for i in 1..pages %}
+				{% if i in pages_allowed %}
 					{% set k = false %}
 					{% if current_page == i %}
-				<li class="active"><a href="#">{{i+1}}</a></li>
+				<li class="active"><a href="#">{{i}}</a></li>
 					{% else %}
-				<li><a href="{{url}}{{i}}">{{i+1}}</a></li> 
+				<li><a href="{{url}}{{i}}">{{i}}</a></li> 
 					{% endif %}
 				{% else %}
-					{% if k %}
-					{% else %}
-					<li class="disabled"><a href="#">...</a></li>
-					{% set k = true %}
+					{% if not k %}
+						{% if (i+1) not in pages_allowed %}
+							<li class="disabled"><a href="#">...</a></li>
+							{% set k = true %}
+						{% else %}
+							<li><a href="{{url}}{{i}}">{{i}}</a></li>
+							{% set k = true %}
+						{% endif %}
 					{% endif %}
 				{% endif %}
 			{% endfor %}
