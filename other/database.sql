@@ -1,6 +1,6 @@
 # ------------------------------------------------------------
 #
-# Replace smc_ with your database prefix.
+# Replace {db_prefix} with your database prefix.
 #
 # ------------------------------------------------------------
 
@@ -11,9 +11,9 @@ SET NAMES utf8;
 # Dump of table event_listeners
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_event_listeners`;
+DROP TABLE IF EXISTS `{db_prefix}event_listeners`;
 
-CREATE TABLE `smc_event_listeners` (
+CREATE TABLE `{db_prefix}event_listeners` (
   `id_listener` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `listener_name` tinytext CHARACTER SET latin1 NOT NULL,
   `listener_callback` tinytext CHARACTER SET latin1 NOT NULL,
@@ -25,16 +25,16 @@ CREATE TABLE `smc_event_listeners` (
 # Dump of table lang_packages
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_lang_packages`;
+DROP TABLE IF EXISTS `{db_prefix}lang_packages`;
 
-CREATE TABLE `smc_lang_packages` (
+CREATE TABLE `{db_prefix}lang_packages` (
   `id_package` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   `package_name` varchar(255) NOT NULL DEFAULT '',
   `package_type` varchar(255) NOT NULL,
   PRIMARY KEY (`id_package`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_lang_packages` (`id_package`, `package_name`, `package_type`)
+INSERT INTO `{db_prefix}lang_packages` (`id_package`, `package_name`, `package_type`)
 VALUES
 	(1,'org.smcore.common','common'),
 	(2,'org.smcore.auth','common'),
@@ -43,9 +43,9 @@ VALUES
 # Dump of table lang_strings
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_lang_strings`;
+DROP TABLE IF EXISTS `{db_prefix}lang_strings`;
 
-CREATE TABLE `smc_lang_strings` (
+CREATE TABLE `{db_prefix}lang_strings` (
   `string_language` smallint(4) unsigned NOT NULL,
   `string_package` smallint(4) unsigned NOT NULL,
   `string_key` varchar(255) CHARACTER SET ascii NOT NULL DEFAULT '',
@@ -53,7 +53,7 @@ CREATE TABLE `smc_lang_strings` (
   UNIQUE KEY `language_key` (`string_language`,`string_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_lang_strings` (`string_language`, `string_package`, `string_key`, `string_value`)
+INSERT INTO `{db_prefix}lang_strings` (`string_language`, `string_package`, `string_key`, `string_value`)
 VALUES
 	(1,1,'admin','Admin'),
 	(1,4,'admin.authenticate','Authenticate'),
@@ -161,16 +161,16 @@ VALUES
 # Dump of table languages
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_languages`;
+DROP TABLE IF EXISTS `{db_prefix}languages`;
 
-CREATE TABLE `smc_languages` (
+CREATE TABLE `{db_prefix}languages` (
   `id_language` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   `language_code` varchar(255) NOT NULL DEFAULT '',
   `language_name` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id_language`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_languages` (`id_language`, `language_code`, `language_name`)
+INSERT INTO `{db_prefix}languages` (`id_language`, `language_code`, `language_name`)
 VALUES
 	(1,'en_US','English (American)');
 
@@ -178,9 +178,9 @@ VALUES
 # Dump of table menu
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_menu`;
+DROP TABLE IF EXISTS `{db_prefix}menu`;
 
-CREATE TABLE `smc_menu` (
+CREATE TABLE `{db_prefix}menu` (
   `id_menu` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `menu_title` varchar(255) NOT NULL DEFAULT '',
   `menu_visible` tinyint(1) unsigned NOT NULL DEFAULT '0',
@@ -193,7 +193,7 @@ CREATE TABLE `smc_menu` (
   PRIMARY KEY (`id_menu`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_menu` (`id_menu`, `menu_title`, `menu_visible`, `menu_module`, `menu_parent`, `menu_order`, `menu_url`, `menu_permission`, `menu_name`)
+INSERT INTO `{db_prefix}menu` (`id_menu`, `menu_title`, `menu_visible`, `menu_module`, `menu_parent`, `menu_order`, `menu_url`, `menu_permission`, `menu_name`)
 VALUES
 	(1,'auth.menu.login',1,'org.smcore.auth',0,98,'/login/','org.smcore.auth.is_guest','login'),
 	(2,'auth.menu.register',1,'org.smcore.auth',0,99,'/register/','org.smcore.auth.is_guest','register'),
@@ -203,9 +203,9 @@ VALUES
 # Dump of table permissions
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_permissions`;
+DROP TABLE IF EXISTS `{db_prefix}permissions`;
 
-CREATE TABLE `smc_permissions` (
+CREATE TABLE `{db_prefix}permissions` (
   `id_permission` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `permission_role` mediumint(8) unsigned NOT NULL,
   `permission_namespace` varchar(255) NOT NULL DEFAULT '',
@@ -218,9 +218,9 @@ CREATE TABLE `smc_permissions` (
 # Dump of table roles
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_roles`;
+DROP TABLE IF EXISTS `{db_prefix}roles`;
 
-CREATE TABLE `smc_roles` (
+CREATE TABLE `{db_prefix}roles` (
   `id_role` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `role_title` varchar(255) NOT NULL DEFAULT '',
   `role_inherits` mediumint(8) unsigned NOT NULL,
@@ -229,7 +229,7 @@ CREATE TABLE `smc_roles` (
   UNIQUE KEY `role_name` (`role_title`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_roles` (`id_role`, `role_title`, `role_inherits`, `role_permission`)
+INSERT INTO `{db_prefix}roles` (`id_role`, `role_title`, `role_inherits`, `role_permission`)
 VALUES
 	(0,'Guest',0,'is_guest'),
 	(1,'Administrator',2,'is_admin'),
@@ -239,9 +239,9 @@ VALUES
 # Dump of table sessions
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_sessions`;
+DROP TABLE IF EXISTS `{db_prefix}sessions`;
 
-CREATE TABLE `smc_sessions` (
+CREATE TABLE `{db_prefix}sessions` (
   `id_session` char(32) NOT NULL DEFAULT '',
   `session_expires` int(10) NOT NULL,
   `session_data` text NOT NULL,
@@ -252,16 +252,16 @@ CREATE TABLE `smc_sessions` (
 # Dump of table themes
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_themes`;
+DROP TABLE IF EXISTS `{db_prefix}themes`;
 
-CREATE TABLE `smc_themes` (
+CREATE TABLE `{db_prefix}themes` (
   `id_theme` smallint(4) unsigned NOT NULL AUTO_INCREMENT,
   `theme_name` varchar(255) NOT NULL,
   `theme_dir` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id_theme`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-INSERT INTO `smc_themes` (`id_theme`, `theme_name`, `theme_dir`)
+INSERT INTO `{db_prefix}themes` (`id_theme`, `theme_name`, `theme_dir`)
 VALUES
 	(1,'Default Theme','default');
 
@@ -269,9 +269,9 @@ VALUES
 # Dump of table users
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `smc_users`;
+DROP TABLE IF EXISTS `{db_prefix}users`;
 
-CREATE TABLE `smc_users` (
+CREATE TABLE `{db_prefix}users` (
   `id_user` int(8) unsigned NOT NULL AUTO_INCREMENT,
   `user_login` varchar(45) NOT NULL,
   `user_email` varchar(255) NOT NULL,
