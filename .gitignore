@@ -22,6 +22,7 @@ Thumbs.db
 /*.sublime-project
 *.sublime-workspace
 *.esproj
+.c9revisions/
 
 
 # Other
