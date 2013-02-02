@@ -26,7 +26,7 @@ use smCore\Exception, smCore\Form\Control;
 
 class Group extends Control
 {
-	protected $_properties;
+    protected $_properties;
 	protected $_controls;
 
 	public function __construct(array $properties = array())
@@ -75,9 +75,10 @@ class Group extends Control
 		return $this->_controls;
 	}
 
-	public function getValue()
+	public function getValue($from_submit = false, $input = null)
 	{
 		// @todo: loop through controls
+		throw Exception('Not implemented.');
 	}
 
 	public function getType()

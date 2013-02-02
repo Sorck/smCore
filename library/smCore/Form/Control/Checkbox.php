@@ -26,7 +26,7 @@ use smCore\Form\Control;
 
 class Checkbox extends Control
 {
-	public function getValue()
+    public function getValue($from_submit = false, $input = null)
 	{
 		return $this->_properties['value'];
 	}
