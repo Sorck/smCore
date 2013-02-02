@@ -16,7 +16,7 @@
  *
  * The Initial Developer of the Original Code is the smCore project.
  *
- * Portions created by the Initial Developer are Copyright (C) 2011
+ * Portions created by the Initial Developer are Copyright (C) 2013
  * the Initial Developer. All Rights Reserved.
  */
 
@@ -26,7 +26,7 @@ use smCore\Application, smCore\Module;
 
 abstract class Controller
 {
-	protected $_app;
+    protected $_app;
 	protected $module;
 
 	public function __construct(Application $app, Module $module)
@@ -38,14 +38,14 @@ abstract class Controller
 	/**
 	 * Run code before dispatching any method in this Controller.
 	 */
-	public function preDispatch()
+	public function preDispatch($method)
 	{
 	}
 
 	/**
 	 * Run code after dispatching any method in this Controller.
 	 */
-	public function postDispatch()
+	public function postDispatch($method)
 	{
 	}
 }

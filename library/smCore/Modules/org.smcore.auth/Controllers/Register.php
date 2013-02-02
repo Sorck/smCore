@@ -26,7 +26,7 @@ use smCore\Module\Controller, smCore\Storage;
 
 class Register extends Controller
 {
-	public function preDispatch()
+	public function preDispatch($method)
 	{
 		$this->module->loadLangPackage();
 	}
