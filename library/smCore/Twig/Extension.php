@@ -129,7 +129,7 @@ class Extension extends Twig_Extension
 			throw new Twig_Error_Runtime(sprintf('Invalid macro, "%s" is undefined.', $name));
 		}
 
-		return call_user_method_array('get' . $name, $template, $arguments);
+		return call_user_func_array(array($template, 'get' . $name) , $arguments);
 	}
 
 	/**
