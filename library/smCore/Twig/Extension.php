@@ -83,7 +83,7 @@ class Extension extends Twig_Extension
 	 *
 	 * @return string
 	 */
-	public function function_lang($key)
+	public static function function_lang($key)
 	{
 		return self::$_app['lang']->get($key, array_slice(func_get_args(), 1));
 	}

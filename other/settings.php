@@ -3,7 +3,7 @@
 /**
  * smCore Settings
  *
- * Contains all of your smCore settings
+ * Contains all of your smCore settings.
  *
  * @package smCore
  * @author smCore Dev Team
