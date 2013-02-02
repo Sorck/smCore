@@ -131,6 +131,7 @@ class Register extends Controller
 				'user_login' => $username,
 				'user_display_name' => $username,
 				'user_email' => $email,
+                'user_primary_role' => 2,
 			))
 			->setPassword($pass1)
 			->save()
