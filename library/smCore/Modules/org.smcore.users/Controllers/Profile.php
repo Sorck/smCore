@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Module Storage
+ * smCore Users Module - Profile Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,18 +20,26 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Module;
+namespace smCore\Modules\Users\Controllers;
 
-use smCore, smCore\Application, smCore\Module;
+use smCore\Module\Controller;
 
-abstract class Storage extends smCore\Storage
+class Profile extends Controller
 {
-	protected $_app;
-	protected $module;
-
-	public function __construct(Application $app, Module $module)
+	public function preDispatch()
 	{
-		$this->_app = $app;
-		$this->module = $module;
+		$this->module->loadLangPackage();
+	}
+
+	public function summary()
+	{
+		$this->_app['menu']->setActive('user', 'user_profile');
+		return $this->module->render('profile');
+	}
+
+	public function settings()
+	{
+		$this->_app['menu']->setActive('user', 'user_settings');
+		return $this->module->render('settings');
 	}
 }

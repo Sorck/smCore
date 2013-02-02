@@ -1,7 +1,7 @@
 <?php
 
 /**
- * smCore Module Storage
+ * smCore Users Module - Admin Controller
  *
  * @package smCore
  * @author smCore Dev Team
@@ -20,18 +20,22 @@
  * the Initial Developer. All Rights Reserved.
  */
 
-namespace smCore\Module;
+namespace smCore\Modules\Users\Controllers;
 
-use smCore, smCore\Application, smCore\Module;
+use smCore\Module\Controller, smCore\Storage;
 
-abstract class Storage extends smCore\Storage
+class Admin extends Controller
 {
-	protected $_app;
-	protected $module;
-
-	public function __construct(Application $app, Module $module)
+	public function preDispatch()
 	{
-		$this->_app = $app;
-		$this->module = $module;
+		$this->module->loadLangPackage();
+	}
+
+	public function main()
+	{
+
+		$this->_app['menu']->setActive('admin', 'admin_users', 'admin_users_main');
+
+		return $this->module->render('admin/users');
 	}
 }

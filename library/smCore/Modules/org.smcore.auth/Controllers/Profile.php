@@ -31,15 +31,15 @@ class Profile extends Controller
 		$this->module->loadLangPackage();
 	}
 
-	public function main()
+	public function summary()
 	{
-		$this->_app['menu']->setActive('profile', 'profile_main');
-		return $this->module->render('profile/main');
+		$this->_app['menu']->setActive('user', 'user_profile');
+		return $this->module->render('profile/summary');
 	}
 
 	public function settings()
 	{
-		$this->_app['menu']->setActive('profile', 'profile_settings');
+		$this->_app['menu']->setActive('user', 'user_settings');
 		return $this->module->render('profile/settings');
 	}
 }
