@@ -26,7 +26,7 @@ use smCore\Exception;
 
 abstract class AbstractCrypt
 {
-	public function __construct()
+    public function __construct()
 	{
 	}
 
@@ -52,8 +52,13 @@ abstract class AbstractCrypt
 			// @todo: it isn't long enough yet, urandom might not have given us the amount of bytes we need
 			return $output;
 		}
-
-		// @todo
-		throw new Exception('getRandomBytes() fallback not yet implemented');
+		
+		// @todo Might need improving - Sorck
+		$str = '';
+		while(strlen($str) < $length)
+		{
+			$str .= md5(microtime() . 'd1kismc8');
+		}
+		return substr($str, 0, $length);
 	}
 }
