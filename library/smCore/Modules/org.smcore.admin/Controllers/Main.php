@@ -26,7 +26,7 @@ use smCore\Module\Controller;
 
 class Main extends Controller
 {
-	public function preDispatch($method)
+    public function preDispatch($method)
 	{
 		$this->module
 			->requireAdmin()
@@ -43,11 +43,15 @@ class Main extends Controller
 		$app = $this->_app;
 
 		$this->_app['menu']->setActive('admin', 'admin_center');
+		
+		// Get the administrators list
+		$admins = $this->_app['storage_factory']->factory('Users')->getUsersByRole(1);
 
 		return $this->module->render('main', array(
 			'smcore_version' => '???', // @todo: fetch from smCore.org
 			'installed_smcore_version' => $app::VERSION,
 			'end_session_token' => $this->module->createToken('end_admin_session'),
+			'admins' => $admins,
 		));
 	}
 

@@ -5,7 +5,7 @@
 
 {% block body %}
 {{ submenu("admin") }}
-		<div class="page-header">
+    	<div class="page-header">
 			<a href="{{ url_for('/admin/end/', {'token': end_session_token}) }}" class="btn btn-danger pull-right">{{ lang('admin.end_session') }}</a>
 			<h1>{{ lang('admin.titles.main') }}</h1>
 		</div>
@@ -36,7 +36,10 @@
 							<dd>{{ installed_smcore_version }}</dd>
 
 							<dt>Administrators:</dt>
-							<dd>...</dd>
+							<dd>
+							{% for admin in admins %}
+								{{ admin.display_name }}{{ loop.last ? '' : ', ' }}
+							{% endfor %}</dd>
 						</dl>
 					</div>
 				</div>
