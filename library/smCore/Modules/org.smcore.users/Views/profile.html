@@ -1,5 +1,6 @@
 {% extends "@theme/layout.html" %}
 {% from "@theme/macros.html" import submenu %}
+{% from "@theme/macros.html" import gravatar %}
 
 {% set page_title = lang('users.titles.summary', user_profile.display_name) %}
 
@@ -37,15 +38,16 @@
 					Account Type:
 				</dt>
 				<dd>
-					...
+					{{ user_profile.roles.primary.name }}
 				</dd>
-
+				{% for role in user_profile.roles.additional %}
 				<dt>
 					.
 				</dt>
 				<dd>
-				.
+					{{ role.name }}
 				</dd>
+				{% endfor %}
 			</dl>
 		</div>
 {% endblock %}
