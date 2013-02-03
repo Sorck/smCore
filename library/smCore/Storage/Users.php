@@ -142,6 +142,54 @@ class Users extends AbstractStorage
 
 		return $user;
 	}
+	
+	public function getUsersByRole($id_role)
+	{
+		// Make sure it's an integer
+		$id_role = (int) $id_role;
+
+		// No negative roles exist
+		if ($id_role < 0)
+		{
+			throw new Exception('Invalid role.');
+		}
+
+		$cache = $this->_app['cache'];
+
+		// If we've already fetched the data, there's no reason to grab it again
+		if (false === $data = $cache->load('user_role_' . $id_role))
+		{
+			$db = $this->_app['db'];
+
+			$result = $db->query("
+				SELECT *
+				FROM {db_prefix}users
+				WHERE user_primary_role = {int:id}",
+				array(
+					'id' => $id_role,
+				)
+			);
+
+			if ($result->rowCount() < 1)
+			{
+				throw new Exception('Tried to load a user with an invalid ID.');
+			}
+
+			while($row = $result->fetch())
+			{
+				$data[] = $row;
+			}
+
+			$cache->save($data, 'user_role_' . $id_role);
+		}
+
+		foreach($data as $k => $row)
+		{
+			$data[$k] = new User($this->_app, $row);
+		}
+
+		return $data;
+	}
 
 	public function save(User $user)
 	{
