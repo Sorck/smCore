@@ -24,7 +24,7 @@ namespace smCore;
 
 class Request
 {
-	protected $_url;
+    protected $_url;
 	protected $_method = 'GET';
 	protected $_is_xml_http_request = false;
 	protected $_path;
@@ -122,6 +122,9 @@ class Request
 		}
 
 		$_GET = array();
+		
+		// Make sure it's decoded properly
+		$this->_path = urldecode($this->_path);
 
 		if (!empty($this->_path))
 		{
