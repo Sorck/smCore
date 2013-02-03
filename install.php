@@ -28,35 +28,65 @@
  */
 
 // Register the autoloader
-require_once(dirname(dirname(__FILE__)) . '/library/smCore/Autoloader.php');
-new smCore\Autoloader(null, dirname(dirname(__FILE__)) . '/library');
+require_once(dirname(__FILE__) . '/library/smCore/Autoloader.php');
+new smCore\Autoloader(null, dirname(__FILE__) . '/library');
+
+echo '<!doctype html>
+<head>
+<title>smCore installation</title>
+</head>
+<body>
+<h1>This is pre-alpha software and is for development purposes only!</h1>';
 
 // Does the settings file exist?
-if(!file_exists('../settings.php'))
-    die('Please create your settings.php file in '.dirname(dirname(__FILE__)).' and configure it based upon '.dirname(dirname(__FILE__)).'/other/settings.php');
+if(!file_exists('settings.php'))
+{
+    // Try building a settings file
+	$protocol = 'http'.(!empty($_SERVER['HTTPS']) ? 's' : '');
+	$url = $protocol.'://'.$_SERVER['HTTP_HOST'] . rtrim(str_replace(str_replace(array(__DIR__, '\\', '/'), '', __FILE__), '', $_SERVER['SCRIPT_NAME']), '/');
+	$settings = file_get_contents(__DIR__ . '/other/settings.php');
+	$settings = str_replace(array(
+		'/home/my_site/public_html',
+		'http://www.youdidntchangeyoursettingsfile.lol',
+		'smcore.mysite.com',
+		'noreply@mysite.com',
+	),
+	array(
+		rtrim(__DIR__, '\\/'),
+		$url,
+		$_SERVER['HTTP_HOST'],
+		'noreply@' . $_SERVER['HTTP_HOST'],
+	), $settings);
+	file_put_contents('settings.php', $settings);
+	echo 'Settings file created.';
+}
 
-// Liad up the settings
-require('../settings.php');
+// Load up the settings
+require('settings.php');
 $settings = new Settings;
 
 // Has the URL been changed?
 if($settings['url'] == 'http://www.youdidntchangeyoursettingsfile.lol')
 {
-    die('You have not correctly set your URL in '.dirname(dirname(__FILE__)).'/settings.php');
-}
-// They need to set a database user
-if($settings['database']['user'] === '')
-{
-    die('You have not correctly set your MySQL username in '.dirname(dirname(__FILE__)).'/settings.php');
+    die('You have not correctly set your URL in '.dirname(__FILE__).'/settings.php');
 }
 
 // Connect to the database
 $con = mysql_connect($settings['database']['host'], $settings['database']['user'], $settings['database']['password']);
 if(!$con)
 {
-    die('MySQL connection failed. Please check your settings in '.dirname(dirname(__FILE__)).'/settings.php');
+	echo '<p>Please add your database settings to the settings file.</p>';
+    //die('MySQL connection failed. Please check your settings in '.dirname(__FILE__).'/settings.php');
+}
+else
+{
+	$qry = file_get_contents('other/database.sql');
+	$fixedqry = str_replace('{db_prefix}', $settings['database']['dbname'].'`.`'.$settings['database']['prefix'], $qry);
+	mysql_query($fixedqry);
+	echo '<p>Database should have been installed.</p>';
+	echo "<p>If it hasn't been installed, run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
 }
 
-$qry = file_get_contents('database.sql');
-$fixedqry = str_replace('{db_prefix}', $settings['database']['dbname'].'`.`'.$settings['database']['prefix'], $qry);
-echo "<!doctype html><html><head><title>smCore installation script</title></head><body><p>Below is your query ready to run in PHPMyAdmin</p>\n<textarea>" , $fixedqry, '<textarea>';
+echo '
+</body>
+</html>';
