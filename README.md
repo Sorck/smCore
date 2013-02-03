@@ -1,5 +1,5 @@
 # smCore
-
+This is pre-alpha quality so please don't run it on a production server.
 
 
 # Miscellaneous
