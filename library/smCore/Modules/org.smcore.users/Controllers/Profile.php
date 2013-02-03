@@ -22,24 +22,47 @@
 
 namespace smCore\Modules\Users\Controllers;
 
-use smCore\Module\Controller;
+use smCore\Module\Controller, smCore\Exception;
 
 class Profile extends Controller
 {
-	public function preDispatch($method)
+    public function preDispatch($method)
 	{
 		$this->module->loadLangPackage();
+		
+		$id = $this->_app['router']->getMatch('username');
+		
+		if(!$id)
+		{
+			$id = $this->_app['user']['id'];
+		}
+		if(is_numeric($id))
+		{
+			$this->_user_profile = $this->_app['storage_factory']->factory('Users')->getUserById((int) $id);
+		}
+		else
+		{
+			$this->_user_profile = $this->_app['storage_factory']->factory('Users')->getUserByName($id);
+		}
+		if(!$this->_user_profile)
+		{
+			throw new Exception('Cannot find profile.');
+		}
 	}
 
 	public function summary()
 	{
 		$this->_app['menu']->setActive('user', 'user_profile');
-		return $this->module->render('profile');
+		return $this->module->render('profile', array(
+			'user_profile' => $this->_user_profile,
+		));
 	}
 
 	public function settings()
 	{
 		$this->_app['menu']->setActive('user', 'user_settings');
-		return $this->module->render('settings');
+		return $this->module->render('settings', array(
+			'user_profile' => $this->_user_profile,
+		));
 	}
 }
