@@ -26,7 +26,7 @@ use smCore\Event, smCore\Exception, smCore\Model\User, smCore\Security\Session;
 
 class Users extends AbstractStorage
 {
-	protected $_current_user;
+    protected $_current_user;
 	protected $_loaded_users = array();
 
 	public function getCurrentUser()
@@ -61,7 +61,7 @@ class Users extends AbstractStorage
 			WHERE LOWER(user_login) = {string:name}
 				OR LOWER(user_display_name) = {string:name}",
 			array(
-				'name' => $name,
+				'name' => strtolower($name),
 			)
 		);
 

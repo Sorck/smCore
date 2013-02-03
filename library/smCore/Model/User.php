@@ -27,7 +27,7 @@ use ArrayAccess;
 
 class User extends AbstractModel implements ArrayAccess
 {
-	// Data for this user
+    // Data for this user
 	protected $_data = array();
 	protected $_permissions_cache = array();
 
@@ -52,6 +52,7 @@ class User extends AbstractModel implements ArrayAccess
 			'theme' => (int) $this->_app['settings']['default_theme'],
 			'token' => '', // @todo
 			'email' => '',
+			'registered' => 0,
 			'roles' => array(
 				'primary' => $roles->getRoleById(Storage\Roles::ROLE_GUEST),
 				'additional' => array(),
@@ -123,6 +124,11 @@ class User extends AbstractModel implements ArrayAccess
 		if (!empty($data['user_pass']))
 		{
 			$this->_data['password'] = $data['user_pass'];
+		}
+		
+		if(!empty($data['user_registered']))
+		{
+			$this->_data['registered'] = (int) $data['user_registered'];
 		}
 
 		$this->_app['events']->fire('org.smcore.user_data_set', array(
