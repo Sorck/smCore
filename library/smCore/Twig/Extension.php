@@ -27,7 +27,7 @@ use Twig_Error_Runtime, Twig_Extension, Twig_Function_Function, Twig_Filter_Func
 
 class Extension extends Twig_Extension
 {
-	protected static $_app;
+    protected static $_app;
 
 	public function __construct(Application $app)
 	{
@@ -63,7 +63,20 @@ class Extension extends Twig_Extension
 		return array(
 			'hms' => new Twig_Filter_Function(__CLASS__ . '::filter_hms'),
 			'split' => new Twig_Filter_Function(__CLASS__ . '::filter_split'),
+			'md5' => new Twig_Filter_Function(__CLASS__ . '::filter_md5'),
 		);
+	}
+	
+	/**
+	 * MD5 hash a string
+	 *
+	 * @param string $data The string to hash.
+	 *
+	 * @return string The hashed string
+	 */
+	public static function filter_md5($data)
+	{
+		return md5($data);
 	}
 
 	/**

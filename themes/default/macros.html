@@ -1,5 +1,5 @@
 {#
-	Macros that can be used as needed on pages.
+    Macros that can be used as needed on pages.
 #}
 
 {% macro submenu(which) %}
@@ -22,6 +22,10 @@
 {% endif %}
 {% endfor %}
 		</ul>
+{%- endmacro %}
+
+{% macro gravatar(email, size) %}
+<img src="https://secure.gravatar.com/avatar/{{ email|lower|md5 }}?s={{ size|default(80) }}&d=mm" />
 {%- endmacro %}
 
 {% macro pagination(url, pages, current_page) %}
