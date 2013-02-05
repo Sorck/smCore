@@ -25,6 +25,7 @@
  * @todo Use smCore's database libraries
  * @todo Actually perform the database query
  * @todo Create the settings file
+ * @todo Remove the /other directory
  */
 
 // Register the autoloader
