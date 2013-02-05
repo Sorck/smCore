@@ -32,11 +32,11 @@ class Profile extends Controller
 		
 		$id = $this->_app['router']->getMatch('username');
 		
-		if(!$id)
+		if (!$id)
 		{
 			$id = $this->_app['user']['id'];
 		}
-		if(is_numeric($id))
+		if (is_numeric($id))
 		{
 			$this->_user_profile = $this->_app['storage_factory']->factory('Users')->getUserById((int) $id);
 		}
@@ -44,7 +44,7 @@ class Profile extends Controller
 		{
 			$this->_user_profile = $this->_app['storage_factory']->factory('Users')->getUserByName($id);
 		}
-		if(!$this->_user_profile)
+		if (!$this->_user_profile)
 		{
 			throw new Exception('Cannot find profile.');
 		}
