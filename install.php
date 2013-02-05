@@ -28,8 +28,8 @@
  */
 
 // Register the autoloader
-require_once(dirname(__FILE__) . '/library/smCore/Autoloader.php');
-new smCore\Autoloader(null, dirname(__FILE__) . '/library');
+require_once(__DIR__ . '/library/smCore/Autoloader.php');
+new smCore\Autoloader(null, __DIR__ . '/library');
 
 echo '<!doctype html>
 <head>
@@ -68,7 +68,7 @@ $settings = new Settings;
 // Has the URL been changed?
 if($settings['url'] == 'http://www.youdidntchangeyoursettingsfile.lol')
 {
-    die('You have not correctly set your URL in '.dirname(__FILE__).'/settings.php');
+    die('You have not correctly set your URL in ' . __DIR__ . '/settings.php');
 }
 
 // Connect to the database
@@ -76,7 +76,6 @@ $con = mysql_connect($settings['database']['host'], $settings['database']['user'
 if(!$con)
 {
 	echo '<p>Please add your database settings to the settings file.</p>';
-    //die('MySQL connection failed. Please check your settings in '.dirname(__FILE__).'/settings.php');
 }
 else
 {
