@@ -18,6 +18,8 @@
  *
  * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
+ * 
+ * @todo Namespace storage items so a module can use this class for it's own storage classes
  */
 
 namespace smCore\Storage;
