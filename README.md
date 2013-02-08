@@ -1,6 +1,10 @@
 # smCore
 This is pre-alpha quality so please don't run it on a production server.
 
+# Installation
+You need to get two Symfony components ( https://github.com/symfony/Yaml and https://github.com/symfony/Finder) and add them to your /library/ directory before smCore will run.
+You will also need to configure settings.php (copy it from /other/ to /) and install the database dump (contained in /other/database.sql)git 
+
 
 # Miscellaneous
 

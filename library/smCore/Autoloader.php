@@ -20,6 +20,8 @@
  *
  * Portions created by the Initial Developer are Copyright (C) 2011
  * the Initial Developer. All Rights Reserved.
+ * 
+ * @todo rather than registering several Autoloaders, why not have a single autoloader with several namespaces?
  */
 
 namespace smCore;
