@@ -40,7 +40,7 @@ echo '<!doctype html>
 <h1>This is pre-alpha software and is for development purposes only!</h1>';
 
 // Does the settings file exist?
-if(!file_exists('settings.php'))
+if (!file_exists('settings.php'))
 {
     // Try building a settings file
 	$protocol = 'http'.(!empty($_SERVER['HTTPS']) ? 's' : '');
@@ -67,14 +67,14 @@ require('settings.php');
 $settings = new Settings;
 
 // Has the URL been changed?
-if($settings['url'] == 'http://www.youdidntchangeyoursettingsfile.lol')
+if ($settings['url'] == 'http://www.youdidntchangeyoursettingsfile.lol')
 {
     die('You have not correctly set your URL in ' . __DIR__ . '/settings.php');
 }
 
 // Connect to the database
 $con = mysql_connect($settings['database']['host'], $settings['database']['user'], $settings['database']['password']);
-if(!$con)
+if (!$con)
 {
 	echo '<p>Please add your database settings to the settings file.</p>';
 }
@@ -83,13 +83,20 @@ else
 	$qry = file_get_contents('other/database.sql');
 	$fixedqry = str_replace('{db_prefix}', $settings['database']['dbname'].'`.`'.$settings['database']['prefix'], $qry);
     $queries = explode(';', $fixedqry);
-    foreach($queries as $query)
-    {
-        mysql_query($query);
-    }
-	echo '<p>Database should have been installed.</p>';
-	echo "<p>If it hasn't been installed, run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
-    echo '<a href="/">Visit your newly installed smCore site.</a>';
+    do {
+        foreach ($queries as $query)
+        {
+            mysql_query($query);
+            if ($error = mysql_error())
+            {
+                echo "<p>", $error, "</p>
+                <p>MySQL error, run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
+                break 2;
+            }
+        }
+    	echo '<p>Database should have been installed.</p>';
+        echo '<a href="/">Visit your newly installed smCore site.</a>';
+    } while (true);
 }
 
 echo '
