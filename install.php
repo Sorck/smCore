@@ -82,9 +82,14 @@ else
 {
 	$qry = file_get_contents('other/database.sql');
 	$fixedqry = str_replace('{db_prefix}', $settings['database']['dbname'].'`.`'.$settings['database']['prefix'], $qry);
-	mysql_query($fixedqry);
+    $queries = explode(';', $fixedqry);
+    foreach($queries as $query)
+    {
+        mysql_query($query);
+    }
 	echo '<p>Database should have been installed.</p>';
 	echo "<p>If it hasn't been installed, run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
+    echo '<a href="/">Visit your newly installed smCore site.</a>';
 }
 
 echo '
