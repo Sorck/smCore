@@ -128,7 +128,7 @@ class Module
 	}
 
 	/**
-	 * Load and return a storage in this module's /Storages/ directory by name.
+	 * Load and return a storage in this module's /Storage/ directory by name.
 	 *
 	 * @param string $name The name of the storage to load.
 	 *
@@ -138,12 +138,12 @@ class Module
 	{
 		if (empty($this->_storages[$name]))
 		{
-			if (!file_exists($this->_directory . '/Storages/' . $name . '.php'))
+			if (!file_exists($this->_directory . '/Storage/' . $name . '.php'))
 			{
 				throw new Exception(array('exceptions.modules.invalid_storage', $name));
 			}
 
-			$storageClass = $this->_config['namespaces']['php'] . '\\Storages\\' . $name;
+			$storageClass = $this->_config['namespaces']['php'] . '\\Storage\\' . $name;
 			$this->_storages[$name] = new $storageClass($this->_app, $this);
 		}
 

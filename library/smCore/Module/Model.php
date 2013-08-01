@@ -24,7 +24,7 @@ namespace smCore\Module;
 
 use smCore\Application, smCore\Module;
 
-abstract class Model
+abstract class Model extends smCore\Model
 {
 	protected $_app;
 	protected $module;
