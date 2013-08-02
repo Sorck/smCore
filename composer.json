@@ -1,7 +1,8 @@
 {
     "require": {
         "symfony/yaml": "2.4.*@dev",
-        "symfony/finder": "dev-poc-recursive-finder"
+        "symfony/finder": "dev-poc-recursive-finder",
+        "twig/twig": "1.*"
     },
     "config" : {
         "vendor-dir" : "library"
