@@ -101,7 +101,7 @@ do {
 				if ($error = mysql_error())
 				{
 					echo "<p>", $error, "</p>
-					<p>MySQL error, run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
+					<p>MySQL error. To complete installation please run the following query in PHPMyAdmin:</p>\n<textarea>" , $fixedqry, '</textarea>';
 					break 2;
 				}
 			}
