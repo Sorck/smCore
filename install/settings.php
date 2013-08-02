@@ -7,8 +7,8 @@
  *
  * @package smCore
  * @author smCore Dev Team
- * @license MPL 1.1
  * @version 1.0 Alpha
+ * @license MPL 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this package except in compliance with the
@@ -24,6 +24,9 @@
 
 class Settings extends smCore\Settings
 {
+    /**
+     * @var int $_settings Internally stores the smCore settings.
+     */
 	protected $_settings = array(
 		/**
 		 * These values should not include trailing slashes.
