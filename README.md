@@ -10,6 +10,9 @@ Then install the dependencies:
 
 Next run ./other/install.php (this produces your SQL query and creates ./settings.php). After this, make sure to fully set up ./settings.php run the generated SQL file.
 
+# Documentation
+Just run PHPDocumentor to get hold of the latest documentation. It's not very complete yet so feel free to contribute more documentation to the codebase.
+
 # Miscellaneous
 
 1. It's not set up very well. Sorry about that, I'll clean it up as soon as I remember that I wrote this.
