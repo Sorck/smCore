@@ -2,7 +2,8 @@
     "require": {
         "symfony/yaml": "2.4.*@dev",
         "symfony/finder": "dev-poc-recursive-finder",
-        "twig/twig": "1.*"
+        "twig/twig": "1.*",
+        "aws/aws-sdk-php": "2.*"
     },
     "config" : {
         "vendor-dir" : "library"
