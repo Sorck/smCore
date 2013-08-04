@@ -183,7 +183,7 @@ class Upload extends AbstractModel
                  */
                  
             }
-            throw new Exception('Feature not implemented ' . __CLASS__ . '::' . __METHOD__);
+            throw new Exception('Feature not implemented ' . __CLASS__ . '::' . __METHOD__ . ' (key = location)');
         }
     }
     
@@ -194,6 +194,7 @@ class Upload extends AbstractModel
      */
     protected function _makeUID($real_filename)
     {
-        return substr(sha1(rand(0,10000)) . $filename . time() . $this->['app']['settings']['site_key'],0,20) . '_' . substr(md5($filename . $this->['app']['settings']['site_key'] . microtime()), 10, 12);
+        return substr(sha1(rand(0,10000)) . $filename . time() . $this->['app']['settings']['site_key'],0,20) .
+            '_' . substr(md5($filename . $this->['app']['settings']['site_key'] . microtime()), 10, 12);
     }
 }

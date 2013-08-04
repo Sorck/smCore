@@ -27,11 +27,6 @@ use smCore\Model\Upload, smCore\Storage\Uploads\AbstractUploads, smCore\Storage\
 
 class Filesystem extends AbstractUploads
 {
-    public function get($uid)
-    {
-        throw new Exception('Not implemented.');
-    }
-    
     public function delete($uid)
     {
         throw new Exception('Not implemented.');

@@ -23,11 +23,31 @@
 
 namespace smCore\Storage\Uploads;
 
-use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface;
+use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface, smCore\Models\Upload;
 
 abstract class AbstractUploads extends AbstractStorage implements UploadsInterface
 {
-   /**
-    * @todo Add database functions.
-    */
+    /**
+     * @todo Add database functions.
+     */
+    public function get($uid)
+    {
+        $result = $this->_app['db']->query("
+    		SELECT *
+			FROM {db_prefix}uploads
+			WHERE LOWER(uid) = {string:uid}",
+			array(
+				'uid' => $uid,
+			)
+		);
+
+		if ($result->rowCount() < 1)
+		{
+			return false;
+		}
+
+		$row = $result->fetch();
+        
+        return new Upload($row);
+    }
 }

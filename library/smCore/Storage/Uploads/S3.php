@@ -47,11 +47,6 @@ class S3 extends AbstractUploads
         ));
     }
     
-    public function get($uid)
-    {
-        throw new Exception('Not implemented.');
-    }
-    
     /**
      * @todo Do we delete using the UID or the actual filename?
      */
@@ -62,6 +57,7 @@ class S3 extends AbstractUploads
             'bucket' => $this->_app['settings']['aws']['bucket'],
             'key' => $uid
         ));
+        $this->_dbDelete($uid);
         // @todo Clean the database
     }
     
@@ -74,6 +70,7 @@ class S3 extends AbstractUploads
             'ACL' => 'public-read',
             'Body' => fopen($file['location'])
         ));
+        $this->_dbAdd($file);
         // @todo Add to the database.
     }
 }
