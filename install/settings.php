@@ -128,7 +128,7 @@ class Settings extends smCore\Settings
          * Options:
          *  S3:
          *      bucket      string  The S3 bucket in which the uploaded files will be saved in. (no trailing slash)
-         *      path        string  The 'path' within the S3 bucket that the files. (no trailing or preceeding slash)
+         *      path        string  The 'path' within the S3 bucket that the files. (no trailing slash, must include preceeding slash)
          *  Filesystem:
          *      directory   string  The directory in which the files will be saved in. (no trailing slash)
          *  All:
@@ -139,6 +139,18 @@ class Settings extends smCore\Settings
         'uploads' => array(
             'class' => 'Filesystem',
             'directory' => '/home/my_site/public_html/uploads',
+        ),
+        
+        /**
+         * AWS settings.
+         * 
+         * Options:
+         *  key_id      string  @todo
+         *  secret_key  string  @todo
+         */
+        'aws' => array(
+            'key_id' => 'my_key_id',
+            'secret_key' => 'my_secret_key',
         ),
 
 		'debug' => true,
