@@ -23,19 +23,37 @@
 
 namespace smCore\Storage\Uploads;
 
-use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface, smCore\Models\Upload;
+use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface, smCore\Models\Upload, smCore\Exception;
 
 abstract class AbstractUploads extends AbstractStorage implements UploadsInterface
 {
     /**
-     * @todo Add database functions.
+     * @method _dbDelete Deletes the record of an upload from the database.
+     * @param string $uid The UID of the upload to delete.
+     * @return null
      */
+    protected function _dbDelete($uid)
+    {
+        // @todo
+    }
+    
+    /**
+     * @method _dbAdd Adds an upload file record to the database.
+     * @param Upload $file The upload object to store.
+     * @return null
+     */
+    protected function _dbAdd(Upload $file)
+    {
+        // @todo
+        throw new Exception();
+    }
+    
     public function get($uid)
     {
         $result = $this->_app['db']->query("
     		SELECT *
 			FROM {db_prefix}uploads
-			WHERE LOWER(uid) = {string:uid}",
+			WHERE uid = {string:uid}",
 			array(
 				'uid' => $uid,
 			)
