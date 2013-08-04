@@ -116,6 +116,11 @@ class Upload extends AbstractModel
             }
             // Create a unique identifier
             $this->uid = $this->_makeUID($_FILES[$post_key]['name']);
+            // Make sure we've got a valid uploaded file.
+            if(!is_uploaded_file($_FILES[$post_key]['tmp_name']))
+            {
+                throw new Exception('Not a valid file.');
+            }
             // Now make sure the location is absaloute
             $this->location = $_FILES[$post_key]['tmp_name'];
             // Make sure we have the right mime type
