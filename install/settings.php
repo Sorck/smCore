@@ -119,6 +119,27 @@ class Settings extends smCore\Settings
 			'driver'      => 'Blackhole',
 			'default_ttl' => 3600,
 		),
+        
+        /**
+         * Upload settings for file uploads
+         * 
+         * Available classes: S3, Filesystem
+         * 
+         * Options:
+         *  S3:
+         *      bucket      string  The S3 bucket in which the uploaded files will be saved in. (no trailing slash)
+         *      path        string  The 'path' within the S3 bucket that the files. (no trailing or preceeding slash)
+         *  Filesystem:
+         *      directory   string  The directory in which the files will be saved in. (no trailing slash)
+         *  All:
+         *      uri         strong  The URI where the uploaded files are accessible. (no trailing slash)
+         * 
+         * NOTE: If using S3 you must also set the aws settings.
+         */
+        'uploads' => array(
+            'class' => 'Filesystem',
+            'directory' => '/home/my_site/public_html/uploads',
+        ),
 
 		'debug' => true,
 	);
