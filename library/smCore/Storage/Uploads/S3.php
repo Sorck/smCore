@@ -58,7 +58,6 @@ class S3 extends AbstractUploads
             'key' => $uid
         ));
         $this->_dbDelete($uid);
-        // @todo Clean the database
     }
     
     public function save(Upload $file)
@@ -71,6 +70,5 @@ class S3 extends AbstractUploads
             'Body' => fopen($file['location'])
         ));
         $this->_dbAdd($file);
-        // @todo Add to the database.
     }
 }

@@ -45,6 +45,17 @@ abstract class AbstractUploads extends AbstractStorage implements UploadsInterfa
     protected function _dbAdd(Upload $file)
     {
         // @todo
+        $this->_app['db']->query("
+            INSERT INTO {db_prefix}uploads
+            (uid, size, mime, id_owner)
+            VALUES ({string:uid}, {int:size}, {string:mime}, {string:id_owner})",
+            array(
+                'uid' => $file->uid,
+                'size' => $file->size,
+                'mime' => $file->mime,
+                'id_owner' => $file->id_owner,
+            )
+        );
         throw new Exception();
     }
     

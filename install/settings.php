@@ -132,13 +132,16 @@ class Settings extends smCore\Settings
          *  Filesystem:
          *      directory   string  The directory in which the files will be saved in. (no trailing slash)
          *  All:
-         *      uri         strong  The URI where the uploaded files are accessible. (no trailing slash)
+         *      uri         string  The URI where the uploaded files are accessible. (no trailing slash)
+         *      size_limit  int     The maximum size of the uploaded file in bytes. (default 128000)
          * 
          * NOTE: If using S3 you must also set the aws settings.
          */
         'uploads' => array(
             'class' => 'Filesystem',
             'directory' => '/home/my_site/public_html/uploads',
+            'uri' => 'http://www.youdidntchangeyoursettingsfile.lol/uploads',
+            'size_limit' => 128000,
         ),
         
         /**

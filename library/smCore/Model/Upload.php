@@ -114,8 +114,13 @@ class Upload extends AbstractModel
             {
                 throw new Exception('Files must have a size.');
             }
+            /**
+             * Set the mime type
+             * @todo validate the mime type
+             */
+            $this->mime = $_FILES[$post_key]['type'];
             // Create a unique identifier
-            $this->uid = $this->_makeUID($_FILES[$post_key]['name']);
+            $this->uid = $this->_makeUID($_FILES[$post_key]['name'], $_FILES[$post_key]['type']);
             // Make sure we've got a valid uploaded file.
             if(!is_uploaded_file($_FILES[$post_key]['tmp_name']))
             {
@@ -123,15 +128,17 @@ class Upload extends AbstractModel
             }
             // Now make sure the location is absaloute
             $this->location = $_FILES[$post_key]['tmp_name'];
-            // Make sure we have the right mime type
-            /**
-             * @todo Make sure it's an allowable mime type
-             * @todo Verify the file is the type it says it is
-             */
-            $this->mime = $_FILES[$post_key]['type'];
             // And make sure we've set the size.
             $this->size = $_FILES[$post_key]['size'];
         }
+        // Is the size allowed?
+        if($this->size > $this->_app['settings']['uploads']['size_limit'])
+        {
+            throw new Exception('File too big.');
+        }
+        /**
+         * @todo Only allow certain file types
+         */
         $this->_store->save($this);
     }
     
@@ -156,6 +163,8 @@ class Upload extends AbstractModel
                 case 'uid':
                     // @todo make sure it's a string
                     $this->uid = $value;
+                    // Set the uri from this
+                    $this->uri = $this->_app['settings']['uploads']['uri'];
                     break;
                 case 'size':
                     // Make sure it's allowable
@@ -186,7 +195,10 @@ class Upload extends AbstractModel
                 /**
                  * @todo verify that it's a valid location
                  */
-                 
+                if(!file_exists($data['location']))
+                {
+                    throw new Exception('Cannot upload non-existant files.');
+                }
             }
             throw new Exception('Feature not implemented ' . __CLASS__ . '::' . __METHOD__ . ' (key = location)');
         }
@@ -196,10 +208,25 @@ class Upload extends AbstractModel
      * @method _makeUID Create a pseudo random unique identifier.
      * @param string $real_filename The filename for which we are creating the UID.
      * @return string The UID for the file in question.
+     * 
+     * @todo Check the mime type validity by using finfo
      */
-    protected function _makeUID($real_filename)
+    protected function _makeUID($real_filename, $mime)
     {
-        return substr(sha1(rand(0,10000)) . $filename . time() . $this->['app']['settings']['site_key'],0,20) .
+        $uid = substr(sha1(rand(0,10000)) . $filename . time() . $this->['app']['settings']['site_key'],0,20) .
             '_' . substr(md5($filename . $this->['app']['settings']['site_key'] . microtime()), 10, 12);
+        // MIME to file extension
+        $mimes = array(
+            'image/png' => 'png',
+            'image/jpg' => 'jpg',
+            'image/jpeg' => 'jpg',
+            'image/gif' => 'gif',
+        );
+        if(isset($mimes[$mime]))
+        {
+            return $uid . '.' . $mimes[$mime];
+        }
+        // Looks like we'll have to throw an error.
+        throw new Exception('Unknown file type.');
     }
 }
