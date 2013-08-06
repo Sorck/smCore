@@ -23,20 +23,18 @@
 
 namespace smCore\Storage\Uploads;
 
-use smCore\Model\Upload, smCore\Storage\Uploads\AbstractUploads, smCore\Storage\AbstractStorage;
+use smCore\Model\Upload, smCore\Storage\Uploads\AbstractUploads, smCore\Storage\AbstractStorage, smCore\Exception;
 
 class Filesystem extends AbstractUploads
 {
     public function delete($uid)
     {
-        throw new Exception('Not implemented.');
         unlink($this->_app['settings']['uploads']['directory'] . '/' . $uid);
         $this->_dbDelete($uid);
     }
     
     public function save(Upload $file)
     {
-        throw new Exception('Not implemented.');
         $new_location = $this->_app['settings']['uploads']['directory'] . '/' . $file->uid;
         move_uploaded_file($file->location, $new_location);
         // Set the new location

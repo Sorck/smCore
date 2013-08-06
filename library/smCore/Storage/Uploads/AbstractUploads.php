@@ -23,7 +23,7 @@
 
 namespace smCore\Storage\Uploads;
 
-use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface, smCore\Models\Upload, smCore\Exception;
+use smCore\Storage\AbstractStorage, smCore\Storage\Uploads\UploadsInterface, smCore\Model\Upload, smCore\Exception;
 
 abstract class AbstractUploads extends AbstractStorage implements UploadsInterface
 {
@@ -38,11 +38,11 @@ abstract class AbstractUploads extends AbstractStorage implements UploadsInterfa
     }
     
     /**
-     * @method _dbAdd Adds an upload file record to the database.
+     * @method _dbSave Adds an upload file record to the database.
      * @param Upload $file The upload object to store.
      * @return null
      */
-    protected function _dbAdd(Upload $file)
+    protected function _dbSave(Upload $file)
     {
         // @todo
         $this->_app['db']->query("

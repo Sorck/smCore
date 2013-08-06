@@ -69,6 +69,6 @@ class S3 extends AbstractUploads
             'ACL' => 'public-read',
             'Body' => fopen($file['location'])
         ));
-        $this->_dbAdd($file);
+        $this->_dbSave($file);
     }
 }

@@ -61,10 +61,10 @@ class Upload extends AbstractModel
     public $size = 0;
     
     /**
-     * @var smCore\Model\User $owner The owner of the file.
+     * @var int $id_owner The owner of the file.
      * This can be used for verifying quotas or tracking who uploaded bad files etc.
      */
-    public $owner;
+    public $id_owner;
     
     /**
      * @method __construct
@@ -76,7 +76,7 @@ class Upload extends AbstractModel
 		parent::__construct($app);
         // Make sure our storage system is ready for us
         $this->_store = $app['storage_factory']->factory('Uploads\\' . $app['settings']['uploads']['class']);
-        $this->owner = $this->_app['user'];
+        $this->id_owner = $this->_app['user']['id'];
         
         if(is_array($data))
         {
@@ -156,7 +156,7 @@ class Upload extends AbstractModel
                 case 'location':
                     // wait until the end
                     break;
-                case 'mime:
+                case 'mime':
                     // @todo make sure it's a valid mime
                     $this->mime = $value;
                     break;
@@ -175,12 +175,12 @@ class Upload extends AbstractModel
                     }
                     $this->size = (int) $size;
                     break;
-                case 'owner':
-                    if(!($value instanceof User))
+                case 'id_owner':
+                    if(!is_numeric($value))
                     {
-                        throw new Exception('Invalid user.');
+                        throw new Exception('Invalid user ID (NaN).');
                     }
-                    $this->owner = $value;
+                    $this->id_owner = (int) $value;
                     break;
             }
         }
@@ -206,15 +206,15 @@ class Upload extends AbstractModel
     
     /**
      * @method _makeUID Create a pseudo random unique identifier.
-     * @param string $real_filename The filename for which we are creating the UID.
+     * @param string $filename The filename for which we are creating the UID.
      * @return string The UID for the file in question.
      * 
      * @todo Check the mime type validity by using finfo
      */
-    protected function _makeUID($real_filename, $mime)
+    protected function _makeUID($filename, $mime)
     {
-        $uid = substr(sha1(rand(0,10000)) . $filename . time() . $this->['app']['settings']['site_key'],0,20) .
-            '_' . substr(md5($filename . $this->['app']['settings']['site_key'] . microtime()), 10, 12);
+        $uid = substr(sha1(rand(0,10000) . $filename . time() . $this->_app['settings']['site_key']),0,20) .
+            '_' . substr(md5($filename . $this->_app['settings']['site_key'] . microtime()), 10, 12);
         // MIME to file extension
         $mimes = array(
             'image/png' => 'png',
