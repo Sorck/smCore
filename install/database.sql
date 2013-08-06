@@ -284,3 +284,17 @@ CREATE TABLE `{db_prefix}users` (
   `user_reset_key` varchar(32) NOT NULL DEFAULT '',
   UNIQUE KEY `id_user` (`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+# ------------------------------------------------------------
+# Dump of table uploads
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `{db_prefix}uploads`;
+
+CREATE TABLE `{db_prefix}uploads` (
+  `uid` varchar(128) NOT NULL,
+  `id_owner` int(10) unsigned NOT NULL,
+  `mime` varchar(32) NOT NULL,
+  `size` int(10) unsigned NOT NULL,
+  UNIQUE KEY `uid` (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
